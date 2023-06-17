@@ -1,4 +1,5 @@
 import os
+import pathlib
 import re
 from urllib.parse import urlparse
 from collections import defaultdict
@@ -92,7 +93,8 @@ class Route:
     return sorted(segments.values(), key=lambda seg: seg.name.segment_num)
 
   def _get_segments_local(self, data_dir):
-    files = os.listdir(data_dir)
+    data_dir_path = pathlib.Path(data_dir)
+    files = [str(f.relative_to(data_dir_path)) for f in data_dir_path.glob("**/*") if f.is_dir()]
     segment_files = defaultdict(list)
 
     for f in files:
@@ -107,7 +109,7 @@ class Route:
           segment_files[segment_name].append((fullpath, fn))
       elif op_match and os.path.isdir(fullpath):
         segment_name = op_match.group('segment_name')
-        if segment_name.startswith(self.name.canonical_name):
+        if segment_name.replace('/', '|').startswith(self.name.canonical_name):
           for seg_f in os.listdir(fullpath):
             segment_files[segment_name].append((os.path.join(fullpath, seg_f), seg_f))
       elif f == self.name.canonical_name:

@@ -8,12 +8,12 @@ from Crypto.Cipher import AES
 import time
 
 
-GEN2_BODY_SECRET_KEY = 0x00F17B760F53C30CBFFB54AD808F497A
-                      #0x76E19EDB3027B6C51C8E90CED15E59BA
+GEN2_BODY_SECRET_KEY = 0x00F17B760F53C30CBFFB54AD808F497A # level 1
+                      #0x76E19EDB3027B6C51C8E90CED15E59BA # level 3
 
 class ACCESS_TYPE_LEVEL_1(IntEnum):
-  REQUEST_SEED = ACCESS_TYPE.REQUEST_SEED + 2
-  SEND_KEY = ACCESS_TYPE.SEND_KEY + 2
+  REQUEST_SEED = ACCESS_TYPE.REQUEST_SEED
+  SEND_KEY = ACCESS_TYPE.SEND_KEY
 
 def gen2_security_access(seed):
     cipher = AES.new(GEN2_BODY_SECRET_KEY, AES.MODE_ECB)
@@ -38,7 +38,7 @@ right_signal_output = 0x10A8
 
 panda = Panda()
 panda.set_safety_mode(Panda.SAFETY_ELM327)
-uds_client = UdsClient(panda, addr, bus=2, debug=True)
+uds_client = UdsClient(panda, addr, bus=0, debug=True)
 
 print("extended diagnostic session ...")
 uds_client.diagnostic_session_control(SESSION_TYPE.EXTENDED_DIAGNOSTIC)

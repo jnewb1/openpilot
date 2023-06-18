@@ -5,6 +5,8 @@ from subprocess import check_output, CalledProcessError
 from panda import Panda
 from panda.python.uds import ACCESS_TYPE, DATA_IDENTIFIER_TYPE, UdsClient, SESSION_TYPE
 from Crypto.Cipher import AES
+import time
+
 
 GEN2_BODY_SECRET_KEY = 0x00F17B760F53C30CBFFB54AD808F497A
                       #0x76E19EDB3027B6C51C8E90CED15E59BA
@@ -58,6 +60,8 @@ while True:
     resp = uds_client.read_data_by_identifier(left_signal_input)
 
     print(resp)
+
+    time.sleep(1)
 
 # resp = uds_client.write_data_by_identifier(left_signal_output, '\x01')
 

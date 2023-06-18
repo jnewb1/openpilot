@@ -20,12 +20,6 @@ def gen2_security_access(seed):
     key = cipher.encrypt(seed)
     return key
 
-parser = argparse.ArgumentParser(description="read DTC status")
-parser.add_argument("addr", type=lambda x: int(x,0))
-parser.add_argument("--bus", type=int, default=0)
-parser.add_argument('--debug', action='store_true')
-args = parser.parse_args()
-
 try:
   check_output(["pidof", "boardd"])
   print("boardd is running, please kill openpilot before running this script! (aborted)")

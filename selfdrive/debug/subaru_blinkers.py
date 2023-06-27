@@ -8,7 +8,11 @@ from Crypto.Cipher import AES
 import time
 
 
-GEN2_BODY_SECRET_KEY = 0x00F17B760F53C30CBFFB54AD808F497A # level 1
+GEN2_ES_SECRET_KEY = b'\x33\xe6\x3c\xa0\x43\x11\x53\x46\x0c\x18\xf1\x06\x4c\x70\xfe\x41' # level 1
+GEN2_ES_SECRET_KEY = b'\x33\xe6\x3c\xa0\x43\x11\x53\x46\x0c\x18\xf1\x06\x4c\x70\xfe\x41' # level 3
+
+
+GEN2_BODY_SECRET_KEY = b'\x00\xF1\x7B\x76\x0F\x53\xC3\x0C\xBF\xFB\x54\xAD\x80\x8F\x49\x7A' # level 1
                       #0x76E19EDB3027B6C51C8E90CED15E59BA # level 3
 
 class ACCESS_TYPE_LEVEL_1(IntEnum):
@@ -16,7 +20,7 @@ class ACCESS_TYPE_LEVEL_1(IntEnum):
   SEND_KEY = ACCESS_TYPE.SEND_KEY
 
 def gen2_security_access(seed):
-    cipher = AES.new(GEN2_BODY_SECRET_KEY, AES.MODE_ECB)
+    cipher = AES.new(GEN2_ES_SECRET_KEY, AES.MODE_ECB)
     key = cipher.encrypt(seed)
     return key
 
@@ -28,7 +32,7 @@ except CalledProcessError as e:
   if e.returncode != 1: # 1 == no process found (boardd not running)
     raise e
 
-addr = 0x752
+addr = 0x787
 
 left_signal_input = 0x10A5
 right_signal_unput = 0x10A6
@@ -37,8 +41,9 @@ left_signal_output = 0x10A7
 right_signal_output = 0x10A8
 
 panda = Panda()
-panda.set_safety_mode(Panda.SAFETY_ELM327)
-uds_client = UdsClient(panda, addr, bus=0, debug=True)
+panda.set_safety_mode(Panda.SAFETY_ALLOUTPUT)
+
+uds_client = UdsClient(panda, addr, bus=2, debug=True)
 
 print("extended diagnostic session ...")
 uds_client.diagnostic_session_control(SESSION_TYPE.EXTENDED_DIAGNOSTIC)
@@ -50,13 +55,6 @@ resp = uds_client.security_access(ACCESS_TYPE_LEVEL_1.SEND_KEY, key)
 
 print(resp)
 
-while True:
-    resp = uds_client.read_data_by_identifier(left_signal_input)
+data = uds_client.request_upload(0, 100)
 
-    print(resp)
-
-    time.sleep(1)
-
-# resp = uds_client.write_data_by_identifier(left_signal_output, '\x01')
-
-# print(resp)
+print(data)

@@ -43,34 +43,42 @@ right_signal_output = 0x10A8
 red_panda = Panda()
 red_panda.set_safety_mode(Panda.SAFETY_OPENPORT)
 
-uds_client = UdsClient(red_panda, addr, bus=2)
+# uds_client = UdsClient(red_panda, addr, bus=2)
 
-print("extended diagnostic session ...")
-uds_client.diagnostic_session_control(SESSION_TYPE.EXTENDED_DIAGNOSTIC)
+# print("extended diagnostic session ...")
+# uds_client.diagnostic_session_control(SESSION_TYPE.EXTENDED_DIAGNOSTIC)
 
-print("unlock es lvl 1")
-seed = uds_client.security_access(ACCESS_TYPE_LEVEL_1.REQUEST_SEED)
-key = gen2_security_access(seed, 1)
-resp = uds_client.security_access(ACCESS_TYPE_LEVEL_1.SEND_KEY, key)
-print(resp)
+# print("unlock es lvl 1")
+# seed = uds_client.security_access(ACCESS_TYPE_LEVEL_1.REQUEST_SEED)
+# key = gen2_security_access(seed, 16)
+# resp = uds_client.security_access(ACCESS_TYPE_LEVEL_1.SEND_KEY, key)
+# print(resp)
 
-GEN2_ES_BUTTONS_1_DID = 0x4136 # from ssm4
-GEN2_ES_BUTTONS_2_DID = 0x4137 # from ssm4
+# GEN2_ES_BUTTONS_1_DID = 0x4136 # from ssm4
+# GEN2_ES_BUTTONS_2_DID = 0x4137 # from ssm4
 
-GEN2_ES_EYESIGHT_FUNCTION_CUSTOMIZE = 0x3513
+# GEN2_ES_EYESIGHT_FUNCTION_CUSTOMIZE = 0x3513
 
 red_panda.set_can_speed_kbps(0, 500)
-red_panda.set_can_speed_kbps(1, 500)
+red_panda.set_can_speed_kbps(1, 250)
 red_panda.set_can_speed_kbps(2, 500)
 
 while True:
-  button_1 = uds_client.read_data_by_identifier(GEN2_ES_BUTTONS_1_DID)
-  button_2 = uds_client.read_data_by_identifier(GEN2_ES_BUTTONS_2_DID)
+  # button_1 = uds_client.read_data_by_identifier(GEN2_ES_BUTTONS_1_DID)
+  # button_2 = uds_client.read_data_by_identifier(GEN2_ES_BUTTONS_2_DID)
 
-  print(f"{button_1} {button_2}")
+  # print(f"{button_1} {button_2}")
 
-  #uds_client.write_data_by_identifier(GEN2_ES_BUTTONS_3_DID, b'\x01')
+  # uds_client.write_data_by_identifier(GEN2_ES_BUTTONS_2_DID, b'\x01')
 
-  #uds_client.routine_control(ROUTINE_CONTROL_TYPE.START, GEN2_ES_EYESIGHT_FUNCTION_CUSTOMIZE, b'\x02')
+  # red_panda.can_clear(0)
+  # red_panda.can_clear(1)
+  # red_panda.can_clear(2)
 
-  time.sleep(0.01)
+  # time.sleep(0.01)
+
+  for msg in red_panda.can_recv():
+    addr, _, dat, bus = msg
+
+    if bus != 2:
+      print(addr, bus)

@@ -32,7 +32,7 @@ except CalledProcessError as e:
   if e.returncode != 1: # 1 == no process found (boardd not running)
     raise e
 
-addr = 0x787
+addr = 0x752 #0x787
 
 left_signal_input = 0x10A5
 right_signal_unput = 0x10A6
@@ -49,31 +49,29 @@ print("extended diagnostic session ...")
 uds_client.diagnostic_session_control(SESSION_TYPE.EXTENDED_DIAGNOSTIC)
 
 print("unlock es lvl 1")
-seed = uds_client.security_access(ACCESS_TYPE_LEVEL_1.REQUEST_SEED)
-key = gen2_security_access(seed, 1)
-resp = uds_client.security_access(ACCESS_TYPE_LEVEL_1.SEND_KEY, key)
-print(resp)
+# seed = uds_client.security_access(ACCESS_TYPE_LEVEL_1.REQUEST_SEED)
+# key = gen2_security_access(seed, 1)
+# resp = uds_client.security_access(ACCESS_TYPE_LEVEL_1.SEND_KEY, key)
+# print(resp)
 
-GEN2_ES_BUTTONS_1_DID = 0x4136 # from ssm4
-GEN2_ES_BUTTONS_2_DID = 0x4137 # from ssm4
+# GEN2_ES_BUTTONS_1_DID = 0x4136 # from ssm4
+# GEN2_ES_BUTTONS_2_DID = 0x4137 # from ssm4
 
 # GEN2_ES_EYESIGHT_FUNCTION_CUSTOMIZE = 0x3513
 
 while True:
-  button_1 = uds_client.read_data_by_identifier(GEN2_ES_BUTTONS_1_DID)
-  button_2 = uds_client.read_data_by_identifier(GEN2_ES_BUTTONS_2_DID)
+  # button_1 = uds_client.read_data_by_identifier(GEN2_ES_BUTTONS_1_DID)
+  # button_2 = uds_client.read_data_by_identifier(GEN2_ES_BUTTONS_2_DID)
 
-  print(f"{button_1} {button_2}")
+  # print(f"{button_1} {button_2}")
 
-  uds_client.write_data_by_identifier(GEN2_ES_BUTTONS_2_DID, b'\x01')
+  #uds_client.write_data_by_identifier(GEN2_ES_BUTTONS_2_DID, b'\x01')
 
   time.sleep(0.01)
 
-  # for msg in red_panda.can_recv():
-  #   addr, _, dat, bus = msg
+  for msg in red_panda.can_recv():
+    addr, _, dat, bus = msg
 
-  #   print(addr, bus)
+    if addr > 0x700:
+      print(hex(addr), dat.hex())
   
-  red_panda.can_clear(0)
-  red_panda.can_clear(1)
-  red_panda.can_clear(2)

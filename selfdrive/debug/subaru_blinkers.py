@@ -50,7 +50,7 @@ uds_client.diagnostic_session_control(SESSION_TYPE.EXTENDED_DIAGNOSTIC)
 
 print("unlock es lvl 1")
 seed = uds_client.security_access(ACCESS_TYPE_LEVEL_1.REQUEST_SEED)
-key = gen2_security_access(seed, 16)
+key = gen2_security_access(seed, 1)
 resp = uds_client.security_access(ACCESS_TYPE_LEVEL_1.SEND_KEY, key)
 print(resp)
 
@@ -58,10 +58,6 @@ GEN2_ES_BUTTONS_1_DID = 0x4136 # from ssm4
 GEN2_ES_BUTTONS_2_DID = 0x4137 # from ssm4
 
 # GEN2_ES_EYESIGHT_FUNCTION_CUSTOMIZE = 0x3513
-
-red_panda.set_can_speed_kbps(0, 500)
-red_panda.set_can_speed_kbps(1, 500)
-red_panda.set_can_speed_kbps(2, 500)
 
 while True:
   button_1 = uds_client.read_data_by_identifier(GEN2_ES_BUTTONS_1_DID)
@@ -71,13 +67,13 @@ while True:
 
   uds_client.write_data_by_identifier(GEN2_ES_BUTTONS_2_DID, b'\x01')
 
-  red_panda.can_clear(0)
-  red_panda.can_clear(1)
-  red_panda.can_clear(2)
-
   time.sleep(0.01)
 
   # for msg in red_panda.can_recv():
   #   addr, _, dat, bus = msg
 
   #   print(addr, bus)
+  
+  red_panda.can_clear(0)
+  red_panda.can_clear(1)
+  red_panda.can_clear(2)

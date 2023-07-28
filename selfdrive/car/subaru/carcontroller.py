@@ -7,6 +7,8 @@ MAX_STEER_RATE = 25 # deg/s
 MAX_STEER_RATE_FRAMES = 7  # tx control frames needed before torque can be cut
 
 MAX_STEER_ANGLE = 88
+MAX_STEER_ANGLE_FRAMES = 7
+MAX_STEER_ANGLE_CONSECUTIVE_FRAMES = 2
 
 class CarController:
   def __init__(self, dbc_name, CP, VM):
@@ -17,6 +19,7 @@ class CarController:
     self.cruise_button_prev = 0
     self.last_cancel_frame = 0
     self.steer_rate_counter = 0
+    self.steer_angle_counter = 0
 
     self.p = CarControllerParams(CP)
     self.packer = CANPacker(DBC[CP.carFingerprint]['pt'])
@@ -49,8 +52,8 @@ class CarController:
                                  self.steer_rate_counter, MAX_STEER_RATE_FRAMES)
         
         # Any steering past 90 appears to cause temp fault
-        _, apply_steer_req = common_fault_avoidance(CS.out.steeringAngleDeg, MAX_STEER_ANGLE, apply_steer_req,
-                                                    max_request_frames=0)
+        self.steer_angle_counter, apply_steer_req = common_fault_avoidance(CS.out.steeringAngleDeg, MAX_STEER_ANGLE, apply_steer_req,
+                                                    self.steer_angle_counter, MAX_STEER_ANGLE_FRAMES, MAX_STEER_ANGLE_CONSECUTIVE_FRAMES)
 
       if self.CP.carFingerprint in PREGLOBAL_CARS:
         can_sends.append(subarucan.create_preglobal_steering_control(self.packer, apply_steer, CC.latActive))

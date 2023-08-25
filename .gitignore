@@ -3,6 +3,7 @@ venv/
 .env
 .clang-format
 .DS_Store
+.ci-cache
 .tags
 .ipynb_checkpoints
 .idea

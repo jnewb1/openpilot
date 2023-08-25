@@ -48,6 +48,6 @@ runs:
       if: ${{ inputs.setup_docker_scons_cache == 'true' }}
       run: |
         mkdir -p $GITHUB_WORKSPACE/.ci-cache/scons-cache
-        cp selfdrive/test/Dockerfile.scons_cache $GITHUB_WORKSPACE/.ci-cache/scons-cache
+        cp selfdrive/test/Dockerfile.scons_cache $GITHUB_WORKSPACE/.ci-cache
         cd $GITHUB_WORKSPACE/.ci-cache
         DOCKER_BUILDKIT=1 docker build -t scons-cache -f Dockerfile.scons_cache .

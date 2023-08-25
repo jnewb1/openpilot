@@ -27,7 +27,7 @@ runs:
     - id: restore-scons-cache
       uses: actions/cache/restore@v3
       with:
-        path: .ci-cache/scons-cache
+        path: $GITHUB_WORKSPACE/.ci-cache/scons-cache
         key: scons-${{ env.CACHE_COMMIT_DATE }}-${{ github.sha }}
         restore-keys: |
           scons-${{ env.CACHE_COMMIT_DATE }}-
@@ -47,7 +47,7 @@ runs:
       shell: bash
       if: ${{ inputs.setup_docker_scons_cache == 'true' }}
       run: |
-        cp selfdrive/test/Dockerfile.scons_cache .ci-cache/scons-cache
-        mkdir -p .ci-cache/scons-cache
+        cp selfdrive/test/Dockerfile.scons_cache $GITHUB_WORKSPACE/.ci-cache/scons-cache
+        mkdir -p $GITHUB_WORKSPACE/.ci-cache/scons-cache
         cd .ci-cache
         DOCKER_BUILDKIT=1 docker build -t scons-cache -f Dockerfile.scons_cache .

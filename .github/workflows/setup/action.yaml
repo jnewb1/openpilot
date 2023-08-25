@@ -27,7 +27,7 @@ runs:
     - id: restore-scons-cache
       uses: actions/cache/restore@v3
       with:
-        path: $GITHUB_WORKSPACE/.ci-cache/scons-cache
+        path: .ci-cache/scons-cache
         key: scons-${{ env.CACHE_COMMIT_DATE }}-${{ github.sha }}
         restore-keys: |
           scons-${{ env.CACHE_COMMIT_DATE }}-

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-if [ $JOB_ID -eq "0"] then
+if [ $JOB_ID -eq "0"]; then
   $UNIT_TEST common && \
   $UNIT_TEST opendbc/can && \
   $UNIT_TEST selfdrive/boardd && \
@@ -20,7 +20,7 @@ if [ $JOB_ID -eq "0"] then
   $UNIT_TEST system/hardware/tici
 fi
 
-if [ $JOB_ID -eq "1"] then
+if [ $JOB_ID -eq "1"]; then
   $UNIT_TEST tools/lib/tests && \
   ./selfdrive/ui/tests/create_test_translations.sh && \
   QT_QPA_PLATFORM=offscreen ./selfdrive/ui/tests/test_translations && \

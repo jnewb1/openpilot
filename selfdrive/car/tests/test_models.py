@@ -72,7 +72,7 @@ class TestCarModelBase(unittest.TestCase):
   ci: bool = True
 
   can_msgs: List[capnp.lib.capnp._DynamicStructReader]
-  elm_frame: Optional[int]
+  flip_frame: Optional[int]
 
   @unittest.skipIf(SKIP_ENV_VAR in os.environ, f"Long running test skipped. Unset {SKIP_ENV_VAR} to run")
   @classmethod
@@ -221,7 +221,7 @@ class TestCarModelBase(unittest.TestCase):
     # Since OBD port is multiplexed to bus 1 (commonly radar bus) while fingerprinting,
     # start parsing CAN messages after we've left ELM mode and can expect CAN traffic
     error_cnt = 0
-    for i, msg in enumerate(self.can_msgs[self.elm_frame:]):
+    for i, msg in enumerate(self.can_msgs[self.flip_frame:]):
       rr = RI.update((msg.as_builder().to_bytes(),))
       if rr is not None and i > 50:
         error_cnt += car.RadarData.Error.canError in rr.errors
@@ -256,7 +256,7 @@ class TestCarModelBase(unittest.TestCase):
 
           # No need to check relay malfunction on disabled routes (relay closed),
           # or before fingerprinting is done (1s of tolerance to exit silent mode)
-          if self.openpilot_enabled and t / 1e4 > (self.elm_frame + 100):
+          if self.openpilot_enabled and t / 1e4 > (self.flip_frame + 100):
             self.assertFalse(self.safety.get_relay_malfunction())
           else:
             self.safety.set_relay_malfunction(False)

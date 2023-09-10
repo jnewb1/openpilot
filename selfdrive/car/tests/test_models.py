@@ -24,6 +24,7 @@ from panda.tests.libpanda import libpanda_py
 from openpilot.selfdrive.test.helpers import SKIP_ENV_VAR
 
 PandaType = log.PandaState.PandaType
+HarnessStatus = log.PandaState.HarnessStatus
 SafetyModel = car.CarParams.SafetyModel
 
 NUM_JOBS = int(os.environ.get("NUM_JOBS", "1"))
@@ -107,7 +108,7 @@ class TestCarModelBase(unittest.TestCase):
 
       car_fw = []
       can_msgs = []
-      cls.elm_frame = None
+      cls.flip_frame = None
       fingerprint = defaultdict(dict)
       experimental_long = False
       enabled_toggle = True
@@ -136,12 +137,12 @@ class TestCarModelBase(unittest.TestCase):
         # Log which can frame the panda safety mode left ELM327, for CAN validity checks
         if msg.which() == 'pandaStates':
           for ps in msg.pandaStates:
-            if cls.elm_frame is None and ps.safetyModel != SafetyModel.elm327:
-              cls.elm_frame = len(can_msgs)
+            if cls.flip_frame is None and ps.harnessStatus == HarnessStatus.flipped:
+              cls.flip_frame = len(can_msgs)
 
         elif msg.which() == 'pandaStateDEPRECATED':
-          if cls.elm_frame is None and msg.pandaStateDEPRECATED.safetyModel != SafetyModel.elm327:
-            cls.elm_frame = len(can_msgs)
+          if cls.flip_frame is None and msg.pandaStateDEPRECATED.harnessStatus == HarnessStatus.flipped:
+            cls.flip_frame = len(can_msgs)
 
       if len(can_msgs) > int(50 / DT_CTRL):
         break

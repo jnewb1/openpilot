@@ -118,7 +118,7 @@ std::string download_demo_route() {
     data_dir = mkdtemp(tmp_path);
 
     Route remote_route(DEMO_ROUTE);
-    assert(remote_route.load());
+    REQUIRE(remote_route.load());
 
     // Create a local route from remote for testing
     const std::string route_name = DEMO_ROUTE.mid(17).toStdString();

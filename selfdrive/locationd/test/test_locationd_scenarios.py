@@ -33,8 +33,7 @@ class Scenario(Enum):
   ACCEL_SPIKE_MIDWAY = 'accel_spike_midway'
 
 
-def get_select_fields_data(logs):
-  llk = [x.liveLocationKalman for x in logs if x.which() == 'liveLocationKalman']
+def get_select_fields_data(llk):
   data = defaultdict(list)
   for key, func in SELECT_COMPARE_FUNC.items():
     for msg in llk:
@@ -89,7 +88,9 @@ def run_scenarios(scenario, logs):
     logs = sorted(non_accel + accel, key=lambda x: x.logMonoTime)
 
   replayed_logs = replay_process_with_name(name='locationd', lr=logs)
-  return get_select_fields_data(logs), get_select_fields_data(replayed_logs)
+
+  llk = [x.liveLocationKalman for x in logs if x.which() == 'liveLocationKalman']
+  return get_select_fields_data(llk), get_select_fields_data(llk)
 
 
 class TestLocationdScenarios(unittest.TestCase):

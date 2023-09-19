@@ -11,12 +11,12 @@ from openpilot.selfdrive.test.process_replay.process_replay import replay_proces
 
 TEST_ROUTE, TEST_SEG_NUM = "ff2bd20623fcaeaa|2023-09-05--10-14-54", 4
 GPS_MESSAGES = ['gpsLocationExternal', 'gpsLocation']
-SELECT_COMPARE_FIELDS = {
-  'yaw_rate': ['angularVelocityCalibrated', 'value', 2],
-  'roll': ['orientationNED', 'value', 0],
-  'gps_flag': ['gpsOK'],
-  'inputs_flag': ['inputsOK'],
-  'sensors_flag': ['sensorsOK'],
+SELECT_COMPARE_FUNC = {
+  'yaw_rate': lambda msg: msg.angularVelocityCalibrated.value[2],
+  'roll': lambda msg: orientationNED.value[0],
+  'gps_flag': lambda msg: msg.gpsOK,
+  'inputs_flag': lambda msg: msg.inputsOK,
+  'sensors_flag': lambda msg: msg.sensorsOK,
 }
 JUNK_IDX = 100
 
@@ -34,16 +34,11 @@ class Scenario(Enum):
 
 
 def get_select_fields_data(logs):
-  def get_nested_keys(msg, keys):
-    val = None
-    for key in keys:
-      val = getattr(msg if val is None else val, key) if isinstance(key, str) else val[key]
-    return val
   llk = [x.liveLocationKalman for x in logs if x.which() == 'liveLocationKalman']
   data = defaultdict(list)
-  for msg in llk:
-    for key, fields in SELECT_COMPARE_FIELDS.items():
-      data[key].append(get_nested_keys(msg, fields))
+  for key, func in SELECT_COMPARE_FUNC.items():
+    for msg in llk:
+      data[key].append(func(msg))
   for key in data:
     data[key] = np.array(data[key][JUNK_IDX:], dtype=float)
   return data

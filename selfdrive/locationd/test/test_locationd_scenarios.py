@@ -88,8 +88,8 @@ def run_scenarios(scenario, logs):
     logs = sorted(non_accel + accel, key=lambda x: x.logMonoTime)
 
   replayed_logs = replay_process_with_name(name='locationd', lr=logs)
+  llk = [x.liveLocationKalman for x in replayed_logs if x.which() == 'liveLocationKalman']
 
-  llk = [x.liveLocationKalman for x in logs if x.which() == 'liveLocationKalman']
   return get_select_fields_data(llk), get_select_fields_data(llk)
 
 

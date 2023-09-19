@@ -13,7 +13,7 @@ TEST_ROUTE, TEST_SEG_NUM = "ff2bd20623fcaeaa|2023-09-05--10-14-54", 4
 GPS_MESSAGES = ['gpsLocationExternal', 'gpsLocation']
 SELECT_COMPARE_FUNC = {
   'yaw_rate': lambda msg: msg.angularVelocityCalibrated.value[2],
-  'roll': lambda msg: orientationNED.value[0],
+  'roll': lambda msg: msg.orientationNED.value[0],
   'gps_flag': lambda msg: msg.gpsOK,
   'inputs_flag': lambda msg: msg.inputsOK,
   'sensors_flag': lambda msg: msg.sensorsOK,

@@ -22,9 +22,18 @@ RUN cd /tmp && \
     rm -rf arm/ && \
     rm -rf thumb/nofp thumb/v6* thumb/v8* thumb/v7+fp thumb/v7-r+fp.sp
 
+ARG USERNAME=batman
+ARG USERHOME=/home/batman
+
+RUN adduser --disabled-password --gecos '' $USERNAME
+RUN adduser $USERNAME sudo
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+USER $USERNAME
+
 ENV POETRY_VIRTUALENVS_CREATE=false
 ENV PYENV_VERSION=3.11.4
-ENV PYENV_ROOT="/root/.pyenv"
+ENV PYENV_ROOT="$USERHOME/.pyenv"
 ENV PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
 
 COPY pyproject.toml poetry.lock .python-version /tmp/
@@ -32,8 +41,13 @@ COPY tools/install_python_dependencies.sh /tmp/tools/
 
 RUN cd /tmp && \
     tools/install_python_dependencies.sh && \
-    rm -rf /tmp/* && \
-    rm -rf /root/.cache && \
+    rm -rf $USERHOME/.cache && \
     pip uninstall -y poetry
+
+USER root
+    
+RUN rm -rf /tmp/*
+
+RUN ln -s $USERHOME/.pyenv /root/.pyenv
 
 RUN sudo git config --global --add safe.directory /tmp/openpilot

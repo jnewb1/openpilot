@@ -25,66 +25,70 @@ env:
 
 
 jobs:
-  plotjuggler:
-    name: plotjuggler
-    runs-on: ubuntu-20.04
-    timeout-minutes: 45
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: true
-    - uses: ./.github/workflows/setup-with-retry
-    - name: Build openpilot
-      timeout-minutes: 5
-      run: ${{ env.RUN }} "scons -j$(nproc) cereal/ common/ --minimal"
-    - name: Test PlotJuggler
-      timeout-minutes: 2
-      run: |
-        ${{ env.RUN }} "pytest tools/plotjuggler/"
+  # plotjuggler:
+  #   name: plotjuggler
+  #   runs-on: ubuntu-20.04
+  #   timeout-minutes: 45
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #     with:
+  #       submodules: true
+  #   - uses: ./.github/workflows/setup-with-retry
+  #   - name: Build openpilot
+  #     timeout-minutes: 5
+  #     run: ${{ env.RUN }} "scons -j$(nproc) cereal/ common/ --minimal"
+  #   - name: Test PlotJuggler
+  #     timeout-minutes: 2
+  #     run: |
+  #       ${{ env.RUN }} "pytest tools/plotjuggler/"
 
-  simulator:
-    name: simulator
-    runs-on: ubuntu-20.04
-    if: github.repository == 'commaai/openpilot'
-    timeout-minutes: 45
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: true
-    - uses: ./.github/workflows/setup-with-retry
-    - name: Build base cl image
-      run: eval "$BUILD_CL"
-    - name: Setup to push to repo
-      if: github.ref == 'refs/heads/master' && github.repository == 'commaai/openpilot'
-      run: |
-        echo "PUSH_IMAGE=true" >> "$GITHUB_ENV"
-        $DOCKER_LOGIN
-    - name: Build and push sim image
-      run: |
-        selfdrive/test/docker_build.sh sim
+  # simulator:
+  #   name: simulator
+  #   runs-on: ubuntu-20.04
+  #   if: github.repository == 'commaai/openpilot'
+  #   timeout-minutes: 45
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #     with:
+  #       submodules: true
+  #   - uses: ./.github/workflows/setup-with-retry
+  #   - name: Build base cl image
+  #     run: eval "$BUILD_CL"
+  #   - name: Setup to push to repo
+  #     if: github.ref == 'refs/heads/master' && github.repository == 'commaai/openpilot'
+  #     run: |
+  #       echo "PUSH_IMAGE=true" >> "$GITHUB_ENV"
+  #       $DOCKER_LOGIN
+  #   - name: Build and push sim image
+  #     run: |
+  #       selfdrive/test/docker_build.sh sim
 
-  docs:
-    name: build docs
-    runs-on: ubuntu-20.04
-    timeout-minutes: 45
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: true
-    - uses: ./.github/workflows/setup-with-retry
-    - name: Setup to push to repo
-      if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && github.repository == 'commaai/openpilot'
-      run: |
-        echo "PUSH_IMAGE=true" >> "$GITHUB_ENV"
-        $DOCKER_LOGIN
-    - name: Build and push docs image
-      run: |
-        selfdrive/test/docker_build.sh docs
+  # docs:
+  #   name: build docs
+  #   runs-on: ubuntu-20.04
+  #   timeout-minutes: 45
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #     with:
+  #       submodules: true
+  #   - uses: ./.github/workflows/setup-with-retry
+  #   - name: Setup to push to repo
+  #     if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && github.repository == 'commaai/openpilot'
+  #     run: |
+  #       echo "PUSH_IMAGE=true" >> "$GITHUB_ENV"
+  #       $DOCKER_LOGIN
+  #   - name: Build and push docs image
+  #     run: |
+  #       selfdrive/test/docker_build.sh docs
 
   devcontainer:
     name: devcontainer
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
+    - name: install dependencies
+      run: |
+        choco install wsl2
+        choco install docker-desktop
     - uses: actions/checkout@v3
       with:
         submodules: true

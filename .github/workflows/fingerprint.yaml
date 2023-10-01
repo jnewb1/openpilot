@@ -23,7 +23,7 @@ jobs:
         run: ${{ env.RUN }} "scons -j$(nproc)"
       - name: fingerprint
         run: |
-          ${{ env.RUN }} "python selfdrive/debug/ci_fingerprint.py ${{ github.event.comment.body }}"
+          ${{ env.RUN }} "python selfdrive/debug/ci_fingerprint.py \"${{ github.event.comment.body }}\""
       - name: create branch
         run: |
           git add .

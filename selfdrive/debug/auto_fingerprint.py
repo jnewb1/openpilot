@@ -91,9 +91,11 @@ def auto_fingerprint(route, platform):
           new_fw_versions[(fw.ecu, addr, subAddr)] = fw.fwVersion
 
   if not new_fw_versions:
-    print("No new fw versions found...")
+    raise Exception("No new fw versions found...")
 
   add_fw_versions(brand, platform, new_fw_versions)
+
+  return platform
 
 
 if __name__ == "__main__":

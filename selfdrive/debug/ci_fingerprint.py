@@ -1,4 +1,3 @@
-import argparse
 import os
 import shlex
 
@@ -9,10 +8,7 @@ FINGERPRINT_COMMAND = "/fingerprint"
 
 
 if __name__ == "__main__":
-  parser = argparse.ArgumentParser(description="")
-  parser.add_argument("comment", help="Github comment", type=str)
-  args = parser.parse_args()
-  comment = args.comment
+  comment = os.environ["COMMENT_BODY"]
 
   for line in comment.split("\n"):
     if FINGERPRINT_COMMAND in line:

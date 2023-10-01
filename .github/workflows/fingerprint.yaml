@@ -27,6 +27,8 @@ jobs:
         run: ${{ env.RUN }} "python selfdrive/debug/ci_fingerprint.py"
       - name: create branch and PR
         run: |
+          git config --global user.email "fingerprint-researcher@comma.ai"
+          git config --global user.name "Fingerprint Researcher"
           git add .
           git commit -m '{{ steps.fingerprint.pr-title }}'
           git push -u origin {{ steps.fingerprint.pr-branch-name }}

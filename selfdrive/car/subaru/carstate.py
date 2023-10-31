@@ -23,11 +23,9 @@ class CarState(CarStateBase):
     ret.gas = throttle_msg["Throttle_Pedal"] / 255.
 
     ret.gasPressed = ret.gas > 1e-5
-    if self.car_fingerprint in PREGLOBAL_CARS:
-      ret.brakePressed = cp.vl["Brake_Pedal"]["Brake_Pedal"] > 0
-    else:
-      cp_brakes = cp_body if self.car_fingerprint in GLOBAL_GEN2 else cp
-      ret.brakePressed = cp_brakes.vl["Brake_Status"]["Brake"] == 1
+
+    cp_brakes = cp_body if self.car_fingerprint in GLOBAL_GEN2 else cp
+    ret.brakePressed = cp_brakes.vl["Brake_Status"]["Brake"] == 1
 
     cp_wheels = cp_body if self.car_fingerprint in GLOBAL_GEN2 else cp
     ret.wheelSpeeds = self.get_wheel_speeds(
@@ -107,6 +105,7 @@ class CarState(CarStateBase):
     cp_es_brake = cp_body if self.car_fingerprint in GLOBAL_GEN2 else cp_cam
     self.es_brake_msg = copy.copy(cp_es_brake.vl["ES_Brake"])
     cp_es_status = cp_body if self.car_fingerprint in GLOBAL_GEN2 else cp_cam
+    self.brake_status_msg = copy.copy(cp_brakes.vl["Brake_Status"])
 
     if self.car_fingerprint not in HYBRID_CARS:
       self.es_distance_msg = copy.copy(cp_es_distance.vl["ES_Distance"])
@@ -145,11 +144,21 @@ class CarState(CarStateBase):
     return messages
 
   @staticmethod
+  def get_common_preglobal_es_messages():
+    return [
+      ("ES_Brake", 20),
+      ("ES_DashStatus", 20),
+      ("ES_Distance", 20),
+      ("ES_Status", 20),
+    ]
+
+  @staticmethod
   def get_common_preglobal_body_messages():
     messages = [
       ("CruiseControl", 50),
       ("Wheel_Speeds", 50),
       ("Dash_State2", 1),
+      ("Brake_Status", 50),
     ]
 
     return messages
@@ -184,10 +193,7 @@ class CarState(CarStateBase):
   @staticmethod
   def get_cam_can_parser(CP):
     if CP.carFingerprint in PREGLOBAL_CARS:
-      messages = [
-        ("ES_DashStatus", 20),
-        ("ES_Distance", 20),
-      ]
+      messages = CarState.get_common_preglobal_es_messages()
     else:
       messages = [
         ("ES_DashStatus", 10),

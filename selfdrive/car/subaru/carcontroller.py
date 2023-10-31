@@ -102,6 +102,11 @@ class CarController:
 
           can_sends.append(subarucan.create_preglobal_es_distance(self.packer, self.frame // 5, CS.es_distance_msg, 0, pcm_cancel_cmd,
                                                                   self.CP.openpilotLongitudinalControl, cruise_brake > 0, cruise_throttle))
+      if self.frame % 2 == 0:
+        if self.CP.carFingerprint in PREGLOBAL_CARS:
+          stock_brake_value = CS.es_brake_msg["Brake_Pressure"]
+          can_sends.append(subarucan.create_brake_status(self.packer, CS.brake_status_msg, stock_brake_value))
+
     if pcm_cancel_cmd:
       if self.CP.carFingerprint not in HYBRID_CARS:
         bus = CanBus.alt if self.CP.carFingerprint in GLOBAL_GEN2 else CanBus.main

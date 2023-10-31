@@ -86,7 +86,6 @@ class CarState(CarStateBase):
 
     cp_es_distance = cp_body if self.car_fingerprint in (GLOBAL_GEN2 | HYBRID_CARS) else cp_cam
     if self.car_fingerprint in PREGLOBAL_CARS:
-      self.cruise_button = cp_cam.vl["ES_Distance"]["Cruise_Button"]
       self.ready = not cp_cam.vl["ES_DashStatus"]["Not_Ready_Startup"]
     else:
       ret.steerFaultTemporary = cp.vl["Steering_Torque"]["Steer_Warning"] == 1
@@ -96,9 +95,6 @@ class CarState(CarStateBase):
                      (cp_cam.vl["ES_LKAS_State"]["LKAS_Alert"] == 2)
 
       self.es_lkas_state_msg = copy.copy(cp_cam.vl["ES_LKAS_State"])
-      cp_es_brake = cp_body if self.car_fingerprint in GLOBAL_GEN2 else cp_cam
-      self.es_brake_msg = copy.copy(cp_es_brake.vl["ES_Brake"])
-      cp_es_status = cp_body if self.car_fingerprint in GLOBAL_GEN2 else cp_cam
 
       # TODO: Hybrid cars don't have ES_Distance, need a replacement
       if self.car_fingerprint not in HYBRID_CARS:
@@ -106,11 +102,15 @@ class CarState(CarStateBase):
         ret.stockAeb = (cp_es_distance.vl["ES_Brake"]["AEB_Status"] == 8) and \
                        (cp_es_distance.vl["ES_Brake"]["Brake_Pressure"] != 0)
 
-        self.es_status_msg = copy.copy(cp_es_status.vl["ES_Status"])
         self.cruise_control_msg = copy.copy(cp_cruise.vl["CruiseControl"])
+
+    cp_es_brake = cp_body if self.car_fingerprint in GLOBAL_GEN2 else cp_cam
+    self.es_brake_msg = copy.copy(cp_es_brake.vl["ES_Brake"])
+    cp_es_status = cp_body if self.car_fingerprint in GLOBAL_GEN2 else cp_cam
 
     if self.car_fingerprint not in HYBRID_CARS:
       self.es_distance_msg = copy.copy(cp_es_distance.vl["ES_Distance"])
+      self.es_status_msg = copy.copy(cp_es_status.vl["ES_Status"])
 
     self.es_dashstatus_msg = copy.copy(cp_cam.vl["ES_DashStatus"])
     if self.CP.flags & SubaruFlags.SEND_INFOTAINMENT:

@@ -535,6 +535,7 @@ FW_VERSIONS = {
       b'\xb4"@r\a',
       b'\xa0+@@\x07',
       b'\xa0\"@\x80\a',
+      b'\xb4"@0\x07',
     ],
     (Ecu.transmission, 0x7e1, None): [
       b'\xbd\xfb\xe0\x80\x00',
@@ -546,6 +547,7 @@ FW_VERSIONS = {
       b'\xbd\xf2@\x81\000',
       b'\xbe\xfb\xe0p\000',
       b'\xbf\xfb\xe0b\x00',
+      b'\xbd\xf2@\x80\x00',
     ],
   },
   CAR.OUTBACK_PREGLOBAL_2018: {

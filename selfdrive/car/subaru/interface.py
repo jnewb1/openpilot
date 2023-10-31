@@ -15,7 +15,7 @@ class CarInterface(CarInterfaceBase):
     # - replacement for ES_Distance so we can cancel the cruise control
     # - to find the Cruise_Activated bit from the car
     # - proper panda safety setup (use the correct cruise_activated bit, throttle from Throttle_Hybrid, etc)
-    ret.dashcamOnly = candidate in (PREGLOBAL_CARS | LKAS_ANGLE | HYBRID_CARS)
+    ret.dashcamOnly = candidate in (LKAS_ANGLE | HYBRID_CARS)
     ret.autoResumeSng = False
 
     # Detect infotainment message sent from the camera
@@ -117,7 +117,7 @@ class CarInterface(CarInterfaceBase):
     else:
       raise ValueError(f"unknown car: {candidate}")
 
-    #ret.experimentalLongitudinalAvailable = candidate not in (GLOBAL_GEN2 | PREGLOBAL_CARS | LKAS_ANGLE | HYBRID_CARS)
+    ret.experimentalLongitudinalAvailable = candidate not in (GLOBAL_GEN2 | LKAS_ANGLE | HYBRID_CARS)
     ret.openpilotLongitudinalControl = experimental_long and ret.experimentalLongitudinalAvailable
 
     if ret.openpilotLongitudinalControl:

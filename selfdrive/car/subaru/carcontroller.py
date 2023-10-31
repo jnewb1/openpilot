@@ -88,7 +88,8 @@ class CarController:
     if self.CP.openpilotLongitudinalControl:
       if self.frame % 5 == 0:
         if self.CP.carFingerprint not in PREGLOBAL_CARS:
-          can_sends.append(subarucan.create_es_status(self.packer, CS.es_status_msg, self.CP.openpilotLongitudinalControl, CC.longActive, cruise_rpm))
+          can_sends.append(subarucan.create_es_status(self.packer, self.frame // 5, CS.es_status_msg,
+                                                      self.CP.openpilotLongitudinalControl, CC.longActive, cruise_rpm))
 
           can_sends.append(subarucan.create_es_brake(self.packer, self.frame // 5, CS.es_brake_msg, CC.enabled, cruise_brake))
 

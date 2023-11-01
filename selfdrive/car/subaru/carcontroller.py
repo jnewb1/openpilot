@@ -106,7 +106,7 @@ class CarController:
       if self.frame % 2 == 0:
         if self.CP.carFingerprint in PREGLOBAL_CARS:
           stock_brake_value = CS.es_brake_msg["Brake_Pressure"]
-          can_sends.append(subarucan.create_brake_status(self.packer, CS.brake_status_msg, stock_brake_value))
+          can_sends.append(subarucan.create_preglobal_brake_status(self.packer, CS.brake_status_msg, stock_brake_value))
 
     if pcm_cancel_cmd:
       if self.CP.carFingerprint not in HYBRID_CARS:

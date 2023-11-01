@@ -316,7 +316,7 @@ def create_preglobal_es_distance(packer, frame, es_distance_msg, pcm_cancel_cmd,
 
   return packer.make_can_msg("ES_Distance", CanBus.main, values)
 
-def create_brake_status(packer, brake_status_msg, stock_brake_value):
+def create_preglobal_brake_status(packer, brake_status_msg, stock_brake_value):
   values = {s: brake_status_msg[s] for s in brake_status_msg.keys()}
   values["ES_Brake"] = stock_brake_value > 0
 

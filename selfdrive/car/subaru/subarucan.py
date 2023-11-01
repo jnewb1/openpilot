@@ -285,8 +285,6 @@ def create_preglobal_es_brake(packer, frame, es_brake_msg, enabled, brake_value)
 
   values["Brake_Pressure"] = brake_value
 
-  values["Cruise_Fault"] = 0
-
   if brake_value > 0:
     values["Cruise_Brake_Active"] = 1
     values["Cruise_Brake_Lights"] = 1 if brake_value >= 70 else 0
@@ -299,13 +297,12 @@ def create_preglobal_es_brake(packer, frame, es_brake_msg, enabled, brake_value)
   return packer.make_can_msg("ES_Brake", CanBus.main, values)
 
 
-def create_preglobal_es_distance(packer, frame, es_distance_msg, bus, pcm_cancel_cmd, long_enabled = False, brake_cmd = False, cruise_throttle = 0):
+def create_preglobal_es_distance(packer, frame, es_distance_msg, pcm_cancel_cmd, long_enabled = False, brake_cmd = False, cruise_throttle = 0):
   values = {s: es_distance_msg[s] for s in es_distance_msg.keys()}
 
   if long_enabled:
     values["COUNTER"] = frame % 0x08
     values["Cruise_Throttle"] = cruise_throttle
-    values["Cruise_Fault"] = 0
 
     if brake_cmd:
       values["Cruise_Brake_Active"] = 1
@@ -322,6 +319,5 @@ def create_preglobal_es_distance(packer, frame, es_distance_msg, bus, pcm_cancel
 def create_brake_status(packer, brake_status_msg, stock_brake_value):
   values = {s: brake_status_msg[s] for s in brake_status_msg.keys()}
   values["ES_Brake"] = stock_brake_value > 0
-  values["Brake_Light"] = 0
 
   return packer.make_can_msg("Brake_Status", CanBus.camera, values)

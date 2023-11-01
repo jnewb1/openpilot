@@ -101,7 +101,7 @@ class CarController:
 
           can_sends.append(subarucan.create_preglobal_es_brake(self.packer, self.frame // 5, CS.es_brake_msg, CC.enabled, cruise_brake))
 
-          can_sends.append(subarucan.create_preglobal_es_distance(self.packer, self.frame // 5, CS.es_distance_msg, 0, pcm_cancel_cmd,
+          can_sends.append(subarucan.create_preglobal_es_distance(self.packer, self.frame // 5, CS.es_distance_msg, pcm_cancel_cmd,
                                                                   self.CP.openpilotLongitudinalControl, cruise_brake > 0, cruise_throttle))
       if self.frame % 2 == 0:
         if self.CP.carFingerprint in PREGLOBAL_CARS:
@@ -114,7 +114,7 @@ class CarController:
         if self.CP.carFingerprint not in PREGLOBAL_CARS:
           can_sends.append(subarucan.create_es_distance(self.packer, CS.es_distance_msg["COUNTER"] + 1, CS.es_distance_msg, bus, pcm_cancel_cmd))
         else:
-          can_sends.append(subarucan.create_preglobal_es_distance(self.packer, CS.es_distance_msg["COUNTER"] + 1, CS.es_distance_msg, bus, pcm_cancel_cmd))
+          can_sends.append(subarucan.create_preglobal_es_distance(self.packer, CS.es_distance_msg["COUNTER"] + 1, CS.es_distance_msg, pcm_cancel_cmd))
 
     new_actuators = actuators.copy()
     new_actuators.steer = self.apply_steer_last / self.p.STEER_MAX

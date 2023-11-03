@@ -289,6 +289,8 @@ def create_preglobal_es_brake(packer, frame, es_brake_msg, enabled, brake_value)
     values["Cruise_Brake_Active"] = 1
     values["Cruise_Brake_Lights"] = 1 if brake_value >= 70 else 0
 
+  values["Cruise_Fault"] = 0
+
   values["COUNTER"] = frame % 0x08
 
   values["Checksum"] = subaru_preglobal_checksum(packer, values, "ES_Brake")
@@ -305,6 +307,8 @@ def create_preglobal_es_distance(packer, frame, es_distance_msg, pcm_cancel_cmd,
 
     # Do not disable openpilot on Eyesight Soft Disable, if openpilot is controlling long
     values["Cruise_Soft_Disable"] = 0
+
+    values["Cruise_Fault"] = 0
 
     if brake_cmd:
       values["Cruise_Brake_Active"] = 1

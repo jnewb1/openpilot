@@ -304,6 +304,9 @@ def create_preglobal_es_distance(packer, frame, es_distance_msg, pcm_cancel_cmd,
     values["COUNTER"] = frame % 0x08
     values["Cruise_Throttle"] = cruise_throttle
 
+    # Do not disable openpilot on Eyesight Soft Disable, if openpilot is controlling long
+    values["Cruise_Soft_Disable"] = 0
+
     if brake_cmd:
       values["Cruise_Brake_Active"] = 1
 

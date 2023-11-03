@@ -290,7 +290,6 @@ def create_preglobal_es_brake(packer, frame, es_brake_msg, enabled, brake_value)
     values["Cruise_Brake_Lights"] = 1 if brake_value >= 70 else 0
 
   values["COUNTER"] = frame % 0x08
-  values["SET_1"] = 1
 
   values["Checksum"] = subaru_preglobal_checksum(packer, values, "ES_Brake")
 

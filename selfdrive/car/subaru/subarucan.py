@@ -327,3 +327,11 @@ def create_preglobal_brake_status(packer, brake_status_msg, stock_brake_value):
   values["ES_Brake"] = stock_brake_value > 0
 
   return packer.make_can_msg("Brake_Status", CanBus.camera, values)
+
+def create_preglobal_es_dashstatus(packer, es_dashstatus_msg, long_enabled):
+  values = {s: es_dashstatus_msg[s] for s in es_dashstatus_msg.keys()}
+
+  if long_enabled:
+    values["Cruise_Fault"] = 0
+
+  return packer.make_can_msg("ES_DashStatus", CanBus.main, values)

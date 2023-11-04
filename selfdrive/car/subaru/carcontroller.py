@@ -73,8 +73,8 @@ class CarController:
       cruise_brake = CarControllerParams.BRAKE_MIN
 
     # *** alerts and pcm cancel ***
-    if self.CP.carFingerprint not in PREGLOBAL_CARS:
-      if self.frame % 10 == 0:
+    if self.frame % 10 == 0:
+      if self.CP.carFingerprint not in PREGLOBAL_CARS:
         can_sends.append(subarucan.create_es_dashstatus(self.packer, self.frame // 10, CS.es_dashstatus_msg, CC.enabled, self.CP.openpilotLongitudinalControl,
                                                         CC.longActive, hud_control.leadVisible))
 
@@ -84,6 +84,8 @@ class CarController:
 
         if self.CP.flags & SubaruFlags.SEND_INFOTAINMENT:
           can_sends.append(subarucan.create_es_infotainment(self.packer, self.frame // 10, CS.es_infotainment_msg, hud_control.visualAlert))
+      else:
+        can_sends.append(subarucan.create_preglobal_es_dashstatus(self.packer, CS.es_dashstatus_msg, self.CP.openpilotLongitudinalControl))
 
     if self.CP.openpilotLongitudinalControl:
       if self.frame % 5 == 0:

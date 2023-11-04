@@ -129,7 +129,6 @@ class CarState(CarStateBase):
 
       self.es_dashstatus_msg = copy.copy(cp_cam.vl["ES_DashStatus"])
 
-    if not (self.CP.flags & SubaruFlags.EYESIGHT_DISABLED):
       if self.car_fingerprint not in HYBRID_CARS:
         self.es_distance_msg = copy.copy(cp_es_distance.vl["ES_Distance"])
 
@@ -137,6 +136,9 @@ class CarState(CarStateBase):
 
       if self.CP.flags & SubaruFlags.SEND_INFOTAINMENT:
         self.es_infotainment_msg = copy.copy(cp_cam.vl["ES_Infotainment"])
+
+    else:
+      self.es_uds_response = copy.copy(cp_cam.vl["ES_UDS_Response"])
 
     return ret
 

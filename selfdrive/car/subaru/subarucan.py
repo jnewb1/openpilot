@@ -46,6 +46,7 @@ def create_es_distance(packer, frame, es_distance_msg, bus, pcm_cancel_cmd, long
 
     # Do not disable openpilot on Eyesight Soft Disable, if openpilot is controlling long
     values["Cruise_Soft_Disable"] = 0
+    values["Cruise_Fault"] = 0
 
     if brake_cmd:
       values["Cruise_Brake_Active"] = 1
@@ -160,6 +161,7 @@ def create_es_dashstatus(packer, frame, dashstatus_msg, enabled, long_enabled, l
 
   if long_enabled:
     values["PCB_Off"] = 1 # AEB is not presevered, so show the PCB_Off on dash
+    values["Cruise_Fault"] = 0
 
   # Filter stock LKAS disabled and Keep hands on steering wheel OFF alerts
   if values["LKAS_State_Msg"] in (2, 3):
@@ -184,6 +186,8 @@ def create_es_brake(packer, frame, es_brake_msg, enabled, brake_value):
 
   if enabled:
     values["Cruise_Activated"] = 1
+
+  values["Cruise_Brake_Fault"] = 0
 
   values["Brake_Pressure"] = brake_value
 
@@ -210,6 +214,7 @@ def create_es_status(packer, frame, es_status_msg, long_enabled, long_active, cr
 
   if long_enabled:
     values["Cruise_RPM"] = cruise_rpm
+    values["Cruise_Fault"] = 0
 
     if long_active:
       values["Cruise_Activated"] = 1

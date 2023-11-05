@@ -539,6 +539,7 @@ FW_VERSIONS = {
       b'\xa0+@@\x07',
       b'\xa0\"@\x80\a',
       b'\xb4"@0\x07',
+      b'\xa0*@u\x07',
     ],
     (Ecu.transmission, 0x7e1, None): [
       b'\xbd\xfb\xe0\x80\x00',
@@ -633,6 +634,7 @@ FW_VERSIONS = {
       b'\xbc"`q\x07',
       b'\xe3,\xa0@\x07',
       b'\xbc,\xa0u\x07',
+      b'\xde,\xa0@\x07',
     ],
     (Ecu.transmission, 0x7e1, None): [
       b'\xa5\xfe\xf7@\x00',

@@ -100,7 +100,7 @@ class CarState(CarStateBase):
     else:
       ret.steerFaultTemporary = cp.vl["Steering_Torque"]["Steer_Warning"] == 1
 
-      if not (self.CP.flags & SubaruFlags.EYESIGHT_DISABLED):
+      if not (self.CP.flags & SubaruFlags.DISABLE_EYESIGHT):
         ret.cruiseState.nonAdaptive = cp_cam.vl["ES_DashStatus"]["Conventional_Cruise"] == 1
         ret.cruiseState.standstill = cp_cam.vl["ES_DashStatus"]["Cruise_State"] == 3
         ret.stockFcw = (cp_cam.vl["ES_LKAS_State"]["LKAS_Alert"] == 1) or \
@@ -120,7 +120,7 @@ class CarState(CarStateBase):
           self.es_status_msg = copy.copy(cp_es_status.vl["ES_Status"])
           self.cruise_control_msg = copy.copy(cp_cruise.vl["CruiseControl"])
 
-    if not (self.CP.flags & SubaruFlags.EYESIGHT_DISABLED):
+    if not (self.CP.flags & SubaruFlags.DISABLE_EYESIGHT):
       if self.car_fingerprint not in HYBRID_CARS:
         self.es_distance_msg = copy.copy(cp_es_distance.vl["ES_Distance"])
 
@@ -218,7 +218,7 @@ class CarState(CarStateBase):
     messages = []
     signals = []
 
-    if not CP.flags & SubaruFlags.EYESIGHT_DISABLED:
+    if not CP.flags & SubaruFlags.DISABLE_EYESIGHT:
       if CP.carFingerprint in PREGLOBAL_CARS:
         messages += [
           ("ES_DashStatus", 20),
@@ -250,7 +250,7 @@ class CarState(CarStateBase):
     if CP.carFingerprint in GLOBAL_GEN2:
       messages += CarState.get_common_global_body_messages(CP)
 
-      if not CP.flags & SubaruFlags.EYESIGHT_DISABLED:
+      if not CP.flags & SubaruFlags.DISABLE_EYESIGHT:
         messages += CarState.get_common_global_es_alt_messages(CP)
 
     if CP.carFingerprint in HYBRID_CARS:

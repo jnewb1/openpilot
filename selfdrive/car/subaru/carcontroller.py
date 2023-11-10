@@ -112,7 +112,7 @@ class CarController:
 
           can_sends.append(subarucan.create_es_brake(self.packer, self.frame // 5, CS.es_brake_msg, CC.enabled, cruise_brake))
 
-          if self.CP.flags & SubaruFlags.EYESIGHT_DISABLED:
+          if self.CP.flags & SubaruFlags.DISABLE_EYESIGHT:
             pcm_cancel_cmd = pcm_cancel_cmd or CS.es_uds_response["Cruise_Main"]
             pcm_resume_cmd = CS.es_uds_response["Cruise_Resume"]
             pcm_set_cmd = CS.es_uds_response["Cruise_Set"]

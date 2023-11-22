@@ -44,6 +44,10 @@ def create_es_distance(packer, frame, es_distance_msg, bus, pcm_cancel_cmd, long
 
   if long_enabled:
     values["Cruise_Throttle"] = cruise_throttle
+    values["Close_Distance"] = 5
+    values["Signal1"] = 1
+    values["Signal2"] = 2
+    values["Signal4"] = 1
 
     # Do not disable openpilot on Eyesight Soft Disable, if openpilot is controlling long
     values["Cruise_Soft_Disable"] = 0

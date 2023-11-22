@@ -38,7 +38,7 @@ def create_es_distance(packer, frame, es_distance_msg, bus, pcm_cancel_cmd, long
     "Cruise_Set",
     "Cruise_Resume",
     "Signal6",
-  ]}
+  ]} if es_distance_msg is not None else {}
 
   values["COUNTER"] = frame % 0x10
 
@@ -82,36 +82,37 @@ def create_es_lkas_state(packer, frame, es_lkas_state_msg, enabled, visual_alert
     "LKAS_Right_Line_Visible",
     "LKAS_Alert",
     "Signal3",
-  ]}
+  ]} if es_lkas_state_msg is not None else {}
 
   values["COUNTER"] = frame % 0x10
 
-  # Filter the stock LKAS "Keep hands on wheel" alert
-  if values["LKAS_Alert_Msg"] == 1:
-    values["LKAS_Alert_Msg"] = 0
+  if "LKAS_Alert" in values and "LKAS_Alert_Msg" in values:
+    # Filter the stock LKAS "Keep hands on wheel" alert
+    if values["LKAS_Alert_Msg"] == 1:
+      values["LKAS_Alert_Msg"] = 0
 
-  # Filter the stock LKAS sending an audible alert when it turns off LKAS
-  if values["LKAS_Alert"] == 27:
-    values["LKAS_Alert"] = 0
+    # Filter the stock LKAS sending "Keep hands on wheel OFF" alert (2020+ models)
+    if values["LKAS_Alert_Msg"] == 7:
+      values["LKAS_Alert_Msg"] = 0
 
-  # Filter the stock LKAS sending an audible alert when "Keep hands on wheel" alert is active (2020+ models)
-  if values["LKAS_Alert"] == 28 and values["LKAS_Alert_Msg"] == 7:
-    values["LKAS_Alert"] = 0
+    # Filter the stock LKAS sending an audible alert when it turns off LKAS
+    if values["LKAS_Alert"] == 27:
+      values["LKAS_Alert"] = 0
 
-  # Filter the stock LKAS sending an audible alert when "Keep hands on wheel OFF" alert is active (2020+ models)
-  if values["LKAS_Alert"] == 30:
-    values["LKAS_Alert"] = 0
+    # Filter the stock LKAS sending an audible alert when "Keep hands on wheel" alert is active (2020+ models)
+    if values["LKAS_Alert"] == 28 and values["LKAS_Alert_Msg"] == 7:
+      values["LKAS_Alert"] = 0
 
-  # Filter the stock LKAS sending "Keep hands on wheel OFF" alert (2020+ models)
-  if values["LKAS_Alert_Msg"] == 7:
-    values["LKAS_Alert_Msg"] = 0
+    # Filter the stock LKAS sending an audible alert when "Keep hands on wheel OFF" alert is active (2020+ models)
+    if values["LKAS_Alert"] == 30:
+      values["LKAS_Alert"] = 0
 
   # Show Keep hands on wheel alert for openpilot steerRequired alert
   if visual_alert == VisualAlert.steerRequired:
     values["LKAS_Alert_Msg"] = 1
 
   # Ensure we don't overwrite potentially more important alerts from stock (e.g. FCW)
-  if visual_alert == VisualAlert.ldw and values["LKAS_Alert"] == 0:
+  if visual_alert == VisualAlert.ldw and ("LKAS_Alert" not in values or values["LKAS_Alert"] == 0):
     if left_lane_depart:
       values["LKAS_Alert"] = 12  # Left lane departure dash alert
     elif right_lane_depart:
@@ -128,8 +129,8 @@ def create_es_lkas_state(packer, frame, es_lkas_state_msg, enabled, visual_alert
 
   return packer.make_can_msg("ES_LKAS_State", CanBus.main, values)
 
-def create_es_dashstatus(packer, frame, dashstatus_msg, enabled, long_enabled, long_active, lead_visible):
-  values = {s: dashstatus_msg[s] for s in [
+def create_es_dashstatus(packer, frame, es_dashstatus_msg, enabled, long_enabled, long_active, lead_visible):
+  values = {s: es_dashstatus_msg[s] for s in [
     "CHECKSUM",
     "PCB_Off",
     "LDW_Off",
@@ -156,7 +157,7 @@ def create_es_dashstatus(packer, frame, dashstatus_msg, enabled, long_enabled, l
     "Signal7",
     "Far_Distance",
     "Cruise_State",
-  ]}
+  ]} if es_dashstatus_msg is not None else {}
 
   values["COUNTER"] = frame % 0x10
 
@@ -169,9 +170,10 @@ def create_es_dashstatus(packer, frame, dashstatus_msg, enabled, long_enabled, l
   if long_enabled:
     values["PCB_Off"] = 1 # AEB is not presevered, so show the PCB_Off on dash
 
-  # Filter stock LKAS disabled and Keep hands on steering wheel OFF alerts
-  if values["LKAS_State_Msg"] in (2, 3):
-    values["LKAS_State_Msg"] = 0
+  if "LKAS_State_Msg" in values:
+    # Filter stock LKAS disabled and Keep hands on steering wheel OFF alerts
+    if values["LKAS_State_Msg"] in (2, 3):
+      values["LKAS_State_Msg"] = 0
 
   return packer.make_can_msg("ES_DashStatus", CanBus.main, values)
 
@@ -186,7 +188,7 @@ def create_es_brake(packer, frame, es_brake_msg, enabled, brake_value):
     "Cruise_Brake_Active",
     "Cruise_Activated",
     "Signal3",
-  ]}
+  ]} if es_brake_msg is not None else {}
 
   values["COUNTER"] = frame % 0x10
 
@@ -212,7 +214,7 @@ def create_es_status(packer, frame, es_status_msg, long_enabled, long_active, cr
     "Brake_Lights",
     "Cruise_Hold",
     "Signal3",
-  ]}
+  ]} if es_status_msg is not None else {}
 
   values["COUNTER"] = frame % 0x10
 
@@ -233,20 +235,21 @@ def create_es_infotainment(packer, frame, es_infotainment_msg, visual_alert):
     "LKAS_Blue_Lines",
     "Signal1",
     "Signal2",
-  ]}
+  ]} if es_infotainment_msg is not None else {}
 
   values["COUNTER"] = frame % 0x10
 
-  if values["LKAS_State_Infotainment"] in (3, 4):
-    values["LKAS_State_Infotainment"] = 0
+  if "LKAS_State_Infotainement" in values:
+    if values["LKAS_State_Infotainment"] in (3, 4):
+      values["LKAS_State_Infotainment"] = 0
 
-  # Show Keep hands on wheel alert for openpilot steerRequired alert
-  if visual_alert == VisualAlert.steerRequired:
-    values["LKAS_State_Infotainment"] = 3
+    # Show Keep hands on wheel alert for openpilot steerRequired alert
+    if visual_alert == VisualAlert.steerRequired:
+      values["LKAS_State_Infotainment"] = 3
 
-  # Show Obstacle Detected for fcw
-  if visual_alert == VisualAlert.fcw:
-    values["LKAS_State_Infotainment"] = 2
+    # Show Obstacle Detected for fcw
+    if visual_alert == VisualAlert.fcw:
+      values["LKAS_State_Infotainment"] = 2
 
   return packer.make_can_msg("ES_Infotainment", CanBus.main, values)
 

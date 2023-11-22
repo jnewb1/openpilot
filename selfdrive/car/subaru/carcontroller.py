@@ -97,8 +97,8 @@ class CarController:
       LONG_BUS = CanBus.alt if self.CP.carFingerprint in GLOBAL_GEN2 else CanBus.main
 
       if self.frame % 10 == 0:
-        can_sends.append(subarucan.create_es_dashstatus(self.packer, self.frame // 10, CS.es_dashstatus_msg, CC.enabled, self.CP.openpilotLongitudinalControl,
-                                                        CC.longActive, hud_control.leadVisible))
+        can_sends.append(subarucan.create_es_dashstatus(self.packer, self.frame // 10, CS.es_dashstatus_msg, CS.out.cruiseState.enabled, CC.enabled,
+                                                        self.CP.openpilotLongitudinalControl, CC.longActive, hud_control.leadVisible, hud_control.setSpeed))
 
         can_sends.append(subarucan.create_es_lkas_state(self.packer, self.frame // 10, CS.es_lkas_state_msg, CC.enabled, hud_control.visualAlert,
                                                         hud_control.leftLaneVisible, hud_control.rightLaneVisible,

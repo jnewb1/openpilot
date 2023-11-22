@@ -129,7 +129,7 @@ def create_es_lkas_state(packer, frame, es_lkas_state_msg, enabled, visual_alert
 
   return packer.make_can_msg("ES_LKAS_State", CanBus.main, values)
 
-def create_es_dashstatus(packer, frame, es_dashstatus_msg, enabled, long_enabled, long_active, lead_visible):
+def create_es_dashstatus(packer, frame, es_dashstatus_msg, cruise_on, enabled, long_enabled, long_active, lead_visible, cruise_set_speed):
   values = {s: es_dashstatus_msg[s] for s in [
     "CHECKSUM",
     "PCB_Off",
@@ -150,8 +150,6 @@ def create_es_dashstatus(packer, frame, es_dashstatus_msg, enabled, long_enabled
     "Signal6",
     "Cruise_Set_Speed",
     "Cruise_Fault",
-    "Cruise_On",
-    "Display_Own_Car",
     "Brake_Lights",
     "Car_Follow",
     "Signal7",
@@ -160,6 +158,12 @@ def create_es_dashstatus(packer, frame, es_dashstatus_msg, enabled, long_enabled
   ]} if es_dashstatus_msg is not None else {}
 
   values["COUNTER"] = frame % 0x10
+
+  values["Display_Own_Car"] = 1
+
+  values["Cruise_On"] = cruise_on
+
+  values["Cruise_Set_Speed"] = cruise_set_speed
 
   if enabled and long_active:
     values["Cruise_State"] = 0

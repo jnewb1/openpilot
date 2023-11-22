@@ -164,10 +164,11 @@ def create_es_dashstatus(packer, frame, es_dashstatus_msg, cruise_on, enabled, l
   values["COUNTER"] = frame % 0x10
 
   values["Display_Own_Car"] = 1
-
   values["Cruise_On"] = cruise_on
-
   values["Cruise_Set_Speed"] = cruise_set_speed
+  values["Far_Distance"] = 10
+  values["Cruise_Distance"] = 10
+  values["Signal4"] = 1
 
   if enabled and long_active:
     values["Cruise_State"] = 0

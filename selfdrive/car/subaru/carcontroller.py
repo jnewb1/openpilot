@@ -94,6 +94,8 @@ class CarController:
         can_sends.append(subarucan.create_preglobal_es_distance(self.packer, cruise_button, CS.es_distance_msg))
 
     else:
+      LONG_BUS = CanBus.alt if self.CP.carFingerprint in GLOBAL_GEN2 else CanBus.main
+
       if self.frame % 10 == 0:
         can_sends.append(subarucan.create_es_dashstatus(self.packer, self.frame // 10, CS.es_dashstatus_msg, CC.enabled, self.CP.openpilotLongitudinalControl,
                                                         CC.longActive, hud_control.leadVisible))
@@ -108,9 +110,9 @@ class CarController:
       if self.CP.openpilotLongitudinalControl:
         if self.frame % 5 == 0:
           can_sends.append(subarucan.create_es_status(self.packer, self.frame // 5, CS.es_status_msg,
-                                                      self.CP.openpilotLongitudinalControl, CC.longActive, cruise_rpm))
+                                                      self.CP.openpilotLongitudinalControl, CC.longActive, cruise_rpm, bus=LONG_BUS))
 
-          can_sends.append(subarucan.create_es_brake(self.packer, self.frame // 5, CS.es_brake_msg, CC.enabled, cruise_brake))
+          can_sends.append(subarucan.create_es_brake(self.packer, self.frame // 5, CS.es_brake_msg, CC.enabled, cruise_brake, bus=LONG_BUS))
 
           if self.CP.flags & SubaruFlags.DISABLE_EYESIGHT:
             pcm_cancel_cmd = pcm_cancel_cmd or CS.es_uds_response["Cruise_Main"]
@@ -120,13 +122,12 @@ class CarController:
           else:
             button_data = []
 
-          can_sends.append(subarucan.create_es_distance(self.packer, self.frame // 5, CS.es_distance_msg, 0, pcm_cancel_cmd,
+          can_sends.append(subarucan.create_es_distance(self.packer, self.frame // 5, CS.es_distance_msg, LONG_BUS, pcm_cancel_cmd,
                                                         self.CP.openpilotLongitudinalControl, cruise_brake > 0, cruise_throttle, *button_data))
       else:
         if pcm_cancel_cmd:
           if self.CP.carFingerprint not in HYBRID_CARS:
-            bus = CanBus.alt if self.CP.carFingerprint in GLOBAL_GEN2 else CanBus.main
-            can_sends.append(subarucan.create_es_distance(self.packer, CS.es_distance_msg["COUNTER"] + 1, CS.es_distance_msg, bus, pcm_cancel_cmd))
+            can_sends.append(subarucan.create_es_distance(self.packer, CS.es_distance_msg["COUNTER"] + 1, CS.es_distance_msg, LONG_BUS, pcm_cancel_cmd))
 
       if self.CP.flags & SubaruFlags.DISABLE_EYESIGHT:
         # Tester present (keeps eyesight disabled)

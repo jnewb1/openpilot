@@ -190,8 +190,6 @@ def create_es_brake(packer, frame, es_brake_msg, long_enabled, long_active, brak
     if long_active:
       values["Cruise_Activated"] = 1
 
-  values["Cruise_Brake_Fault"] = 0
-
   values["Brake_Pressure"] = brake_value
 
   if brake_value > 0:

@@ -169,7 +169,7 @@ def create_es_dashstatus(packer, frame, dashstatus_msg, enabled, long_enabled, l
 
   return packer.make_can_msg("ES_DashStatus", CanBus.main, values)
 
-def create_es_brake(packer, frame, es_brake_msg, enabled, brake_value):
+def create_es_brake(packer, frame, es_brake_msg, long_enabled, long_active, brake_value):
   values = {s: es_brake_msg[s] for s in [
     "CHECKSUM",
     "Signal1",
@@ -184,8 +184,11 @@ def create_es_brake(packer, frame, es_brake_msg, enabled, brake_value):
 
   values["COUNTER"] = frame % 0x10
 
-  if enabled:
-    values["Cruise_Activated"] = 1
+  if long_enabled:
+    values["Cruise_Brake_Fault"] = 0
+
+    if long_active:
+      values["Cruise_Activated"] = 1
 
   values["Cruise_Brake_Fault"] = 0
 
@@ -246,6 +249,30 @@ def create_es_infotainment(packer, frame, es_infotainment_msg, visual_alert):
     values["LKAS_State_Infotainment"] = 2
 
   return packer.make_can_msg("ES_Infotainment", CanBus.main, values)
+
+
+def create_es_highbeamassist(packer):
+  values = {
+    "HBA_Available": False,
+  }
+
+  return packer.make_can_msg("ES_HighBeamAssist", CanBus.main, values)
+
+
+def create_es_static_1(packer):
+  values = {
+    "SET_3": 3,
+  }
+
+  return packer.make_can_msg("ES_STATIC_1", CanBus.main, values)
+
+
+def create_es_static_2(packer):
+  values = {
+    "SET_3": 3,
+  }
+
+  return packer.make_can_msg("ES_STATIC_2", CanBus.main, values)
 
 
 # *** Subaru Pre-global ***

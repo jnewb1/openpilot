@@ -16,8 +16,9 @@ def create_steering_control(packer, apply_steer, steer_req):
 def create_steering_status(packer):
   return packer.make_can_msg("ES_LKAS_State", 0, {})
 
-def create_es_distance(packer, frame, es_distance_msg, bus, pcm_cancel_cmd, long_enabled = False, brake_cmd = False, cruise_throttle = 0,
-                       buttons_enabled = False, pcm_resume_cmd = False, pcm_set_cmd = False):
+def create_es_distance(packer, frame, es_distance_msg, bus,
+                       long_enabled = False, brake_cmd = False, cruise_throttle = 0, low_speed = False,
+                       pcm_cancel_cmd = False, pcm_resume_cmd = False, pcm_set_cmd = False):
   values = {s: es_distance_msg[s] for s in [
     "CHECKSUM",
     "Signal1",
@@ -48,6 +49,7 @@ def create_es_distance(packer, frame, es_distance_msg, bus, pcm_cancel_cmd, long
     values["Signal1"] = 1
     values["Signal2"] = 2
     values["Signal4"] = 1
+    values["Low_Speed_Follow"] = low_speed
 
     # Do not disable openpilot on Eyesight Soft Disable, if openpilot is controlling long
     values["Cruise_Soft_Disable"] = 0
@@ -56,10 +58,14 @@ def create_es_distance(packer, frame, es_distance_msg, bus, pcm_cancel_cmd, long
       values["Cruise_Brake_Active"] = 1
 
   # For gen2 long, we need to passthrough the cruise buttons from UDS
-  if buttons_enabled:
-    values["Cruise_Cancel"] = pcm_cancel_cmd
-    values["Cruise_Resume"] = pcm_resume_cmd
-    values["Cruise_Set"] = pcm_set_cmd
+  if pcm_cancel_cmd:
+    values["Cruise_Cancel"] = 1
+
+  if pcm_resume_cmd:
+    values["Cruise_Resume"] = 1
+
+  if pcm_set_cmd:
+    values["Cruise_Set"] = 1
 
   else:
     if pcm_cancel_cmd:

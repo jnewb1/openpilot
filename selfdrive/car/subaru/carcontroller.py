@@ -118,16 +118,19 @@ class CarController:
             pcm_cancel_cmd = pcm_cancel_cmd or CS.es_uds_response["Cruise_Main"]
             pcm_resume_cmd = CS.es_uds_response["Cruise_Resume"]
             pcm_set_cmd = CS.es_uds_response["Cruise_Set"]
-            button_data = [True, pcm_resume_cmd, pcm_set_cmd]
           else:
-            button_data = []
+            pcm_resume_cmd = False
+            pcm_set_cmd = False
 
-          can_sends.append(subarucan.create_es_distance(self.packer, self.frame // 5, CS.es_distance_msg, LONG_BUS, pcm_cancel_cmd,
-                                                        self.CP.openpilotLongitudinalControl, cruise_brake > 0, cruise_throttle, *button_data))
+          low_speed = CS.out.vEgoRaw < 9
+          can_sends.append(subarucan.create_es_distance(self.packer, self.frame // 5, CS.es_distance_msg, LONG_BUS,
+                                                        self.CP.openpilotLongitudinalControl, cruise_brake > 0, cruise_throttle, low_speed,
+                                                        pcm_cancel_cmd, pcm_resume_cmd, pcm_set_cmd))
       else:
         if pcm_cancel_cmd:
           if self.CP.carFingerprint not in HYBRID_CARS:
-            can_sends.append(subarucan.create_es_distance(self.packer, CS.es_distance_msg["COUNTER"] + 1, CS.es_distance_msg, LONG_BUS, pcm_cancel_cmd))
+            can_sends.append(subarucan.create_es_distance(self.packer, CS.es_distance_msg["COUNTER"] + 1, CS.es_distance_msg, LONG_BUS,
+                                                          pcm_cancel_cmd=pcm_cancel_cmd))
 
       if self.CP.flags & SubaruFlags.DISABLE_EYESIGHT:
         # Tester present (keeps eyesight disabled)

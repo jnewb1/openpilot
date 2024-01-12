@@ -9,10 +9,15 @@ import SCons.Errors
 
 SCons.Warnings.warningAsException(True)
 
+# pending upstream fix - https://github.com/SCons/scons/issues/4461
+#SetOption('warn', 'all')
+
 TICI = os.path.isfile('/TICI')
 AGNOS = TICI
 
 Decider('MD5-timestamp')
+
+SetOption('num_jobs', int(os.cpu_count()/2))
 
 AddOption('--kaitai',
           action='store_true',
@@ -37,7 +42,7 @@ AddOption('--clazy',
 AddOption('--compile_db',
           action='store_true',
           help='build clang compilation database')
-          
+
 AddOption('--ccflags',
           action='store',
           type='string',
@@ -116,10 +121,7 @@ else:
   cflags = []
   cxxflags = []
   cpppath = []
-  rpath += [
-    Dir("#cereal").abspath,
-    Dir("#common").abspath
-  ]
+  rpath += []
 
   # MacOS
   if arch == "Darwin":
@@ -144,8 +146,6 @@ else:
       f"#third_party/acados/{arch}/lib",
       f"#third_party/libyuv/{arch}/lib",
       f"#third_party/mapbox-gl-native-qt/{arch}",
-      "#cereal",
-      "#common",
       "/usr/lib",
       "/usr/local/lib",
     ]
@@ -229,10 +229,13 @@ env = Environment(
     "#opendbc/can",
     "#selfdrive/boardd",
     "#common",
+    "#rednose/helpers",
   ],
   CYTHONCFILESUFFIX=".cpp",
   COMPILATIONDB_USE_ABSPATH=True,
-  tools=["default", "cython", "compilation_db"],
+  REDNOSE_ROOT="#",
+  tools=["default", "cython", "compilation_db", "rednose_filter"],
+  toolpath=["#rednose_repo/site_scons/site_tools"],
 )
 
 if arch == "Darwin":
@@ -367,31 +370,7 @@ SConscript([
   'panda/SConscript',
 ])
 
-# Build rednose library and ekf models
-rednose_deps = [
-  "#selfdrive/locationd/models/constants.py",
-  "#selfdrive/locationd/models/gnss_helpers.py",
-]
-
-rednose_config = {
-  'generated_folder': '#selfdrive/locationd/models/generated',
-  'to_build': {
-    'gnss': ('#selfdrive/locationd/models/gnss_kf.py', True, [], rednose_deps),
-    'live': ('#selfdrive/locationd/models/live_kf.py', True, ['live_kf_constants.h'], rednose_deps),
-    'car': ('#selfdrive/locationd/models/car_kf.py', True, [], rednose_deps),
-  },
-}
-
-if arch != "larch64":
-  rednose_config['to_build'].update({
-    'loc_4': ('#selfdrive/locationd/models/loc_kf.py', True, [], rednose_deps),
-    'lane': ('#selfdrive/locationd/models/lane_kf.py', True, [], rednose_deps),
-    'pos_computer_4': ('#rednose/helpers/lst_sq_computer.py', False, [], []),
-    'pos_computer_5': ('#rednose/helpers/lst_sq_computer.py', False, [], []),
-    'feature_handler_5': ('#rednose/helpers/feature_handler.py', False, [], []),
-  })
-
-Export('rednose_config')
+# Build rednose library
 SConscript(['rednose/SConscript'])
 
 # Build system services

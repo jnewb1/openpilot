@@ -114,7 +114,8 @@ class CarController:
           can_sends.append(subarucan.create_es_status(self.packer, self.frame // 5, CS.es_status_msg,
                                                       self.CP.openpilotLongitudinalControl, CC.longActive, cruise_rpm, bus=LONG_BUS))
 
-          can_sends.append(subarucan.create_es_brake(self.packer, self.frame // 5, CS.es_brake_msg, CC.enabled, cruise_brake, bus=LONG_BUS))
+          can_sends.append(subarucan.create_es_brake(self.packer, self.frame // 5, CS.es_brake_msg,
+                                                     self.CP.openpilotLongitudinalControl, CC.longActive, cruise_brake, bus=LONG_BUS))
 
           if self.CP.flags & SubaruFlags.DISABLE_EYESIGHT:
             pcm_cancel_cmd = pcm_cancel_cmd or CS.es_uds_response["Cruise_Main"]

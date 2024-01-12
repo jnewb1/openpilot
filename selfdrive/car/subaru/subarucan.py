@@ -53,9 +53,9 @@ def create_es_distance(packer, frame, es_distance_msg, bus,
 
     # Do not disable openpilot on Eyesight Soft Disable, if openpilot is controlling long
     values["Cruise_Soft_Disable"] = 0
+    values["Cruise_Fault"] = 0
 
-    if brake_cmd:
-      values["Cruise_Brake_Active"] = 1
+    values["Cruise_Brake_Active"] = brake_cmd
 
   # For gen2 long, we need to passthrough the cruise buttons from UDS
   if pcm_cancel_cmd:
@@ -139,7 +139,7 @@ def create_es_lkas_state(packer, frame, es_lkas_state_msg, enabled, visual_alert
 
   return packer.make_can_msg("ES_LKAS_State", CanBus.main, values)
 
-def create_es_dashstatus(packer, frame, es_dashstatus_msg, cruise_on, enabled, long_enabled, long_active, lead_visible, cruise_set_speed):
+def create_es_dashstatus(packer, frame, es_dashstatus_msg, cruise_on, enabled, long_enabled, lead_visible, cruise_set_speed):
   values = {s: es_dashstatus_msg[s] for s in [
     "CHECKSUM",
     "PCB_Off",
@@ -169,21 +169,22 @@ def create_es_dashstatus(packer, frame, es_dashstatus_msg, cruise_on, enabled, l
 
   values["COUNTER"] = frame % 0x10
 
-  values["Display_Own_Car"] = 1
-  values["Cruise_On"] = cruise_on
-  values["Cruise_Set_Speed"] = cruise_set_speed
-  values["Far_Distance"] = 10
-  values["Cruise_Distance"] = 10
-  values["Signal4"] = 1
+  if long_enabled:
+    values["Display_Own_Car"] = 1
+    values["Cruise_On"] = cruise_on
+    values["Cruise_Set_Speed"] = cruise_set_speed
+    values["Far_Distance"] = 10
+    values["Cruise_Distance"] = 10
+    values["Signal4"] = 1
 
-  if enabled and long_active:
     values["Cruise_State"] = 0
-    values["Cruise_Activated"] = 1
+    values["Cruise_Activated"] = enabled
     values["Cruise_Disengaged"] = 0
     values["Car_Follow"] = int(lead_visible)
 
-  if long_enabled:
     values["PCB_Off"] = 1 # AEB is not presevered, so show the PCB_Off on dash
+    values["LDW_Off"] = 0
+    values["Cruise_Fault"] = 0
 
   if "LKAS_State_Msg" in values:
     # Filter stock LKAS disabled and Keep hands on steering wheel OFF alerts
@@ -192,7 +193,7 @@ def create_es_dashstatus(packer, frame, es_dashstatus_msg, cruise_on, enabled, l
 
   return packer.make_can_msg("ES_DashStatus", CanBus.main, values)
 
-def create_es_brake(packer, frame, es_brake_msg, enabled, brake_value, bus=CanBus.main):
+def create_es_brake(packer, frame, es_brake_msg, long_enabled, long_active, brake_value, bus=CanBus.main):
   values = {s: es_brake_msg[s] for s in [
     "CHECKSUM",
     "Signal1",
@@ -207,14 +208,14 @@ def create_es_brake(packer, frame, es_brake_msg, enabled, brake_value, bus=CanBu
 
   values["COUNTER"] = frame % 0x10
 
-  if enabled:
-    values["Cruise_Activated"] = 1
+  if long_enabled:
+    values["Cruise_Brake_Fault"] = 0
+    values["Cruise_Activated"] = long_active
 
-  values["Brake_Pressure"] = brake_value
+    values["Brake_Pressure"] = brake_value
 
-  if brake_value > 0:
-    values["Cruise_Brake_Active"] = 1
-    values["Cruise_Brake_Lights"] = 1 if brake_value >= 70 else 0
+    values["Cruise_Brake_Active"] = brake_value > 0
+    values["Cruise_Brake_Lights"] = brake_value >= 70
 
   return packer.make_can_msg("ES_Brake", bus, values)
 
@@ -224,7 +225,6 @@ def create_es_status(packer, frame, es_status_msg, long_enabled, long_active, cr
     "Signal1",
     "Cruise_Fault",
     "Cruise_RPM",
-    "Signal2",
     "Cruise_Activated",
     "Brake_Lights",
     "Cruise_Hold",
@@ -235,9 +235,9 @@ def create_es_status(packer, frame, es_status_msg, long_enabled, long_active, cr
 
   if long_enabled:
     values["Cruise_RPM"] = cruise_rpm
+    values["Cruise_Fault"] = 0
 
-    if long_active:
-      values["Cruise_Activated"] = 1
+    values["Cruise_Activated"] = long_active
 
   return packer.make_can_msg("ES_Status", bus, values)
 

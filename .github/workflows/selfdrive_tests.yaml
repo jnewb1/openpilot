@@ -114,7 +114,7 @@ jobs:
   docker_push_multiarch:
     name: docker push multiarch tag
     runs-on: ubuntu-20.04
-    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && github.repository == 'commaai/openpilot'
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && github.repository == 'jnewb1/openpilot'
     needs: [docker_push]
     steps:
     - uses: actions/checkout@v4

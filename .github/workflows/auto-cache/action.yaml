@@ -15,6 +15,11 @@ inputs:
     default: 'false'
     required: false
 
+outputs:
+  cache-hit:
+    description: "whether we got a cache hit"
+    value: ${{ (contains(runner.name, 'nsc') && steps.setup-namespace-cache.outputs.cache-hit) || (inputs.save != 'false' && steps.setup-github-cache.outputs.cache-hit) || steps.restore-github-cache.outputs.cache-hit }}
+
 runs:
   using: "composite"
   steps:
@@ -35,7 +40,7 @@ runs:
         restore-keys: ${{ inputs.restore-keys }}
 
     - name: setup github cache
-      id: setup-github-cache
+      id: restore-github-cache
       if: ${{ !contains(runner.name, 'nsc') && inputs.save == 'false' }}
       uses: 'actions/cache/restore@v3'
       with:

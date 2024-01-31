@@ -10,6 +10,11 @@ inputs:
     required: false
     default: ''
 
+outputs:
+  cache-hit:
+    description: "whether we got a cache hit"
+    value: ${{ (contains(runner.name, 'nsc') && steps.setup-github-cache.outputs.cache-hit) || steps.setup-namespace-cache.outputs.cache-hit }}
+
 runs:
   using: "composite"
   steps:

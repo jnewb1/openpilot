@@ -8,6 +8,8 @@ car:
   - all:
     - changed-files: ['selfdrive/car/**']
 
+    test
+
 body:
   - all:
     - changed-files: ['selfdrive/car/body/*']

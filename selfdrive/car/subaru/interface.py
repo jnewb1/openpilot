@@ -40,48 +40,8 @@ class CarInterface(CarInterfaceBase):
     else:
       CarInterfaceBase.configure_torque_tune(candidate, ret.lateralTuning)
 
-    if candidate in (CAR.SUBARU_ASCENT, CAR.SUBARU_ASCENT_2023):
-      ret.steerActuatorDelay = 0.3  # end-to-end angle controller
-      ret.lateralTuning.init('pid')
-      ret.lateralTuning.pid.kf = 0.00003
-      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0., 20.], [0., 20.]]
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.0025, 0.1], [0.00025, 0.01]]
-
-    elif candidate == CAR.SUBARU_IMPREZA:
-      ret.steerActuatorDelay = 0.4  # end-to-end angle controller
-      ret.lateralTuning.init('pid')
-      ret.lateralTuning.pid.kf = 0.00005
-      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0., 20.], [0., 20.]]
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.2, 0.3], [0.02, 0.03]]
-
-    elif candidate == CAR.SUBARU_IMPREZA_2020:
-      ret.lateralTuning.init('pid')
-      ret.lateralTuning.pid.kf = 0.00005
-      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0., 14., 23.], [0., 14., 23.]]
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.045, 0.042, 0.20], [0.04, 0.035, 0.045]]
-
-    elif candidate == CAR.SUBARU_CROSSTREK_HYBRID:
-      ret.steerActuatorDelay = 0.1
-
-    elif candidate in (CAR.SUBARU_FORESTER, CAR.SUBARU_FORESTER_2022, CAR.SUBARU_FORESTER_HYBRID):
-      ret.lateralTuning.init('pid')
-      ret.lateralTuning.pid.kf = 0.000038
-      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0., 14., 23.], [0., 14., 23.]]
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.01, 0.065, 0.2], [0.001, 0.015, 0.025]]
-
-    elif candidate in (CAR.SUBARU_OUTBACK, CAR.SUBARU_LEGACY, CAR.SUBARU_OUTBACK_2023):
-      ret.steerActuatorDelay = 0.1
-
-    elif candidate in (CAR.SUBARU_FORESTER_PREGLOBAL, CAR.SUBARU_OUTBACK_PREGLOBAL_2018):
+    if candidate in (CAR.SUBARU_FORESTER_PREGLOBAL, CAR.SUBARU_OUTBACK_PREGLOBAL_2018):
       ret.safetyConfigs[0].safetyParam = Panda.FLAG_SUBARU_PREGLOBAL_REVERSED_DRIVER_TORQUE  # Outback 2018-2019 and Forester have reversed driver torque signal
-
-    elif candidate == CAR.SUBARU_LEGACY_PREGLOBAL:
-      ret.steerActuatorDelay = 0.15
-
-    elif candidate == CAR.SUBARU_OUTBACK_PREGLOBAL:
-      pass
-    else:
-      raise ValueError(f"unknown car: {candidate}")
 
     ret.experimentalLongitudinalAvailable = not (ret.flags & (SubaruFlags.GLOBAL_GEN2 | SubaruFlags.PREGLOBAL |
                                                               SubaruFlags.LKAS_ANGLE | SubaruFlags.HYBRID))

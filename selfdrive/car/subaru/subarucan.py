@@ -1,3 +1,4 @@
+import copy
 from cereal import car
 from openpilot.selfdrive.car.subaru.values import CanBus
 
@@ -274,6 +275,13 @@ def create_es_static_2(packer):
   }
 
   return packer.make_can_msg("ES_STATIC_2", CanBus.main, values)
+
+
+def create_brake_status(packer, brake_status_msg, es_brake_msg):
+  values = copy.copy(brake_status_msg)
+  values["ES_Brake"] = es_brake_msg["Brake_Pressure"] > 0
+
+  return packer.make_can_msg("Brake_Status", CanBus.camera, values)
 
 
 # *** Subaru Pre-global ***

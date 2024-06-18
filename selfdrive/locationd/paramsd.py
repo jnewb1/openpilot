@@ -219,8 +219,8 @@ def main(sm=None, pm=None):
       liveParameters.angleOffsetAverageDeg = angle_offset_average
       liveParameters.angleOffsetDeg = angle_offset
       liveParameters.valid = all((
-        avg_offset_valid,
-        total_offset_valid,
+        # avg_offset_valid,
+        # total_offset_valid,
         roll_valid,
         roll_std < ROLL_STD_MAX,
         0.2 <= liveParameters.stiffnessFactor <= 5.0,

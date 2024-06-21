@@ -53,15 +53,22 @@ def accel_lookup(accel, velocity):
   RPM_COEFFS = 505.701566115922, 47.375067870110755, 849.4358856004957
   BRAKE_COEFFS = 162.20181849172002, -7.24890966299137, -113.68761091654434
 
-  apply_throttle = THROTTLE_COEFFS[0] + THROTTLE_COEFFS[1] * velocity + THROTTLE_COEFFS[2] * accel
-  apply_rpm = RPM_COEFFS[0] + RPM_COEFFS[1] * velocity + RPM_COEFFS[2] * accel
-  apply_brake = BRAKE_COEFFS[0] + BRAKE_COEFFS[1] * velocity + BRAKE_COEFFS[2] * accel
-
   if accel >= 0:
+    apply_throttle = THROTTLE_COEFFS[0] + THROTTLE_COEFFS[1] * velocity + THROTTLE_COEFFS[2] * accel
+    apply_throttle = max(CarControllerParams.THROTTLE_INACTIVE, apply_throttle)
+
+    apply_rpm = RPM_COEFFS[0] + RPM_COEFFS[1] * velocity + RPM_COEFFS[2] * accel
+    apply_rpm = max(CarControllerParams.RPM_INACTIVE, apply_rpm)
+
     apply_brake = 0
+
   if accel < 0:
     apply_throttle = CarControllerParams.THROTTLE_INACTIVE
     apply_rpm = CarControllerParams.RPM_INACTIVE
+
+    apply_brake = BRAKE_COEFFS[0] + BRAKE_COEFFS[1] * velocity + BRAKE_COEFFS[2] * accel
+
+    apply_brake = max(CarControllerParams.BRAKE_MIN, apply_brake)
 
   return apply_throttle, apply_rpm, apply_brake
 

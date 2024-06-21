@@ -42,14 +42,28 @@ class CarControllerParams:
 
   RPM_INACTIVE = 600             # a good base rpm for zero acceleration
 
-  THROTTLE_LOOKUP_BP = [0, 2]
-  THROTTLE_LOOKUP_V = [THROTTLE_INACTIVE, THROTTLE_MAX]
 
-  RPM_LOOKUP_BP = [0, 2]
-  RPM_LOOKUP_V = [RPM_INACTIVE, RPM_MAX]
+def accel_lookup(accel, velocity):
+  """
+  accel: m/s2
+  velocity: m/s
+  """
 
-  BRAKE_LOOKUP_BP = [-3.5, 0]
-  BRAKE_LOOKUP_V = [BRAKE_MAX, BRAKE_MIN]
+  THROTTLE_COEFFS = 2159.346516196689, 22.147900393532975, 1036.7625980517382
+  RPM_COEFFS = 527.752765188347, 47.69144978476064, 888.1861257163995
+  BRAKE_COEFFS = 165.49715738050935, -6.113283918707369, -123.59397546101803
+
+  apply_throttle = THROTTLE_COEFFS[0] + THROTTLE_COEFFS[1] * velocity + THROTTLE_COEFFS[2] * accel
+  apply_rpm = RPM_COEFFS[0] + RPM_COEFFS[1] * velocity + RPM_COEFFS[2] * accel
+  apply_brake = BRAKE_COEFFS[0] + BRAKE_COEFFS[1] * velocity + BRAKE_COEFFS[2] * accel
+
+  if accel >= 0:
+    apply_brake = 0
+  if accel < 0:
+    apply_throttle = CarControllerParams.THROTTLE_INACTIVE
+    apply_rpm = CarControllerParams.RPM_INACTIVE
+
+  return apply_throttle, apply_rpm, apply_brake
 
 
 class SubaruFlags(IntFlag):

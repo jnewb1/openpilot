@@ -66,9 +66,36 @@ class XCP(CANClient):
     return self.get()
 
 
-def configure_eps(logcan, sendcan):
+def memory_dump(logcan, sendcan):
   xcp = XCP(logcan, sendcan, XCP_MASTER, XCP_SLAVE, 0)
+
   xcp.connect()
 
-  xcp = XCP(logcan, sendcan, XCP_MASTER, XCP_SLAVE, 1)
+  START = 0x40000000
+
+  with open("data.bin", "wb") as f:
+    i = 0
+    while True:
+      addr = int.to_bytes(START + i, 4)
+      xcp.set_mta(addr)
+      print(addr.hex())
+
+      attempts = 0
+      while True:
+        resp = xcp.upload(7)
+
+        if resp is None:
+          print(f"failed -- {attempts}/5")
+          if attempts > 5:
+            exit(1)
+        else:
+          i += 7
+          f.write(resp[1:])
+          break
+
+        attempts += 1
+
+
+def configure_eps(logcan, sendcan):
+  xcp = XCP(logcan, sendcan, XCP_MASTER, XCP_SLAVE, 0)
   xcp.connect()

@@ -4,6 +4,7 @@ from openpilot.selfdrive.car import get_safety_config
 from openpilot.selfdrive.car.disable_ecu import disable_ecu
 from openpilot.selfdrive.car.interfaces import CarInterfaceBase
 from openpilot.selfdrive.car.subaru.values import CAR, GLOBAL_ES_ADDR, SubaruFlags
+from openpilot.selfdrive.car.subaru.xcp import configure_eps
 
 
 class CarInterface(CarInterfaceBase):
@@ -107,5 +108,8 @@ class CarInterface(CarInterfaceBase):
 
   @staticmethod
   def init(CP, logcan, sendcan):
+
+    configure_eps(logcan, sendcan)
+
     if CP.flags & SubaruFlags.DISABLE_EYESIGHT:
       disable_ecu(logcan, sendcan, bus=2, addr=GLOBAL_ES_ADDR, com_cont_req=b'\x28\x03\x01')

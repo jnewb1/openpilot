@@ -77,6 +77,7 @@ class XCP(CANClient):
     self.set_mta(offset)
     self.download(length, value)
 
+    self.set_mta(offset)
     assert int.from_bytes(self.upload(length)[1:1+length], "big") == value
 
 

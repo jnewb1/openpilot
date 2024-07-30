@@ -80,7 +80,7 @@ class XCP(CANClient):
     assert int.from_bytes(self.upload(length)[1:1+length], "big") == value
 
 
-MAX_ANGLE_TABLE = 0x4002b68c + 16 * 2
+MAX_ANGLE_TABLE = int.to_bytes(0x4002b68c + 16 * 2, 4, "big")
 
 
 def configure_eps(logcan, sendcan):

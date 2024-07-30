@@ -47,6 +47,8 @@ class XCP(CANClient):
   def get(self):
     resp = self.wait_for_addr(self.slave_addr, .2)
     cloudlog.error(f"xcp query response: {self.slave_addr} - {resp}")
+    if resp[0] != 0xFF:
+      return None
     return resp
 
   def req(self, dat):

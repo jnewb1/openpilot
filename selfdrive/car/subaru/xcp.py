@@ -81,7 +81,22 @@ class XCP(CANClient):
     assert int.from_bytes(self.upload(length)[1:1+length], "big") == value
 
 
-MAX_ANGLE_TABLE = 0x4002b68c + 16 * 2
+"""
+Row 1: 16 values, 2 bytes each, of speed breakpoints
+Row 2: 16 values, 2 bytes each, of values
+
+XCP allows for temporarily increasing these limits
+"""
+
+
+# this is the start of the values part of the table
+SPEED_BREAKPOINTS = [0, 10, 20, 30, 40, 50, 60, 80, 100, 120, 140, 160, 180, 200, 220, 260]
+
+# Max angle allowed for the LKAS messages at specific speeds
+MAX_ANGLE_TABLE = 0x4002b68c + 2 * 16
+
+# Max torque allowed for the LKAS messages at specific speeds
+MAX_TORQUE_TABLE = 0x4002b64c + 2 * 16
 
 
 def configure_eps(logcan, sendcan):
@@ -93,5 +108,11 @@ def configure_eps(logcan, sendcan):
   xcp.set_value(MAX_ANGLE_TABLE + 4, 30000, 2)
   xcp.set_value(MAX_ANGLE_TABLE + 6, 30000, 2)
   xcp.set_value(MAX_ANGLE_TABLE + 8, 30000, 2)
+
+  xcp.set_value(MAX_TORQUE_TABLE,     3000, 2)
+  xcp.set_value(MAX_TORQUE_TABLE + 2, 3000, 2)
+  xcp.set_value(MAX_TORQUE_TABLE + 4, 3000, 2)
+  xcp.set_value(MAX_TORQUE_TABLE + 6, 3000, 2)
+  xcp.set_value(MAX_TORQUE_TABLE + 8, 3000, 2)
 
   xcp.disconnect()

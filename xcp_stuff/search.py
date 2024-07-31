@@ -18,13 +18,17 @@ def strictly_increasing(dat):
   return True
 
 
-with open("21_legacy.bin", "rb") as f:
+with open("19_crosstrek.bin", "rb") as f:
   dat = f.read()
 
   for i in range(len(dat)):
+
+    def check(row1, row2):
+      if row1[0] > 0 or not strictly_increasing(row1):
+        return
+
+      print(hex(i), row1, row2)
+
     row1, row2 = read_table(dat, i)
 
-    if row1[0] != 0 or not strictly_increasing(row1):
-      continue
-
-    print(hex(i), row1, row2)
+    check(row1, row2)

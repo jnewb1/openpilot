@@ -90,7 +90,8 @@ def joystick_thread(joystick):
   while True:
     joystick.update()
 
-if __name__ == '__main__':
+
+def main():
   parser = argparse.ArgumentParser(description='Publishes events from your joystick to control your car.\n' +
                                                'openpilot must be offroad before starting joysticked.',
                                    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -114,3 +115,7 @@ if __name__ == '__main__':
 
   joystick = Keyboard() if args.keyboard else Joystick(args.gamepad)
   joystick_thread(joystick)
+
+
+if __name__ == '__main__':
+  main()

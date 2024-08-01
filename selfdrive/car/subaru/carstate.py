@@ -29,6 +29,8 @@ class CarState(CarStateBase):
       cp_brakes = cp_body if self.CP.flags & SubaruFlags.GLOBAL_GEN2 else cp
       ret.brakePressed = cp_brakes.vl["Brake_Status"]["Brake"] == 1
 
+      self.brake_status_msg = cp_brakes.vl["Brake_Status"]
+
     cp_es_distance = cp_body if self.CP.flags & (SubaruFlags.GLOBAL_GEN2 | SubaruFlags.HYBRID) else cp_cam
     if not (self.CP.flags & SubaruFlags.HYBRID):
       eyesight_fault = bool(cp_es_distance.vl["ES_Distance"]["Cruise_Fault"])

@@ -285,7 +285,7 @@ def create_brake_status(packer, frame, brake_status_msg, es_brake):
   if es_brake:
     values["ES_Brake"] = 1
 
-  return packer.make_can_msg("ES_Distance", CanBus.camera, values)
+  return packer.make_can_msg("Brake_Status", CanBus.camera, values)
 
 
 # *** Subaru Pre-global ***

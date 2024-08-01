@@ -49,7 +49,7 @@ class Joystick:
       accel_axis = 'ABS_Y'
       steer_axis = 'ABS_RX'
     self.min_axis_value = {accel_axis: 0., steer_axis: 0.}
-    self.max_axis_value = {accel_axis: 255., steer_axis: 255.}
+    self.max_axis_value = {accel_axis: 32627., steer_axis: 32627.}
     self.axes_values = {accel_axis: 0., steer_axis: 0.}
     self.axes_order = [accel_axis, steer_axis]
     self.cancel = False

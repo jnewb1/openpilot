@@ -282,8 +282,7 @@ def create_brake_status(packer, frame, brake_status_msg, es_brake):
 
   values["COUNTER"] = frame % 0x10
 
-  if es_brake:
-    values["ES_Brake"] = 1
+  values["ES_Brake"] = es_brake
 
   return packer.make_can_msg("Brake_Status", CanBus.camera, values)
 
